@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>FacturePro — Facturation SaaS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F7F5;--surface:#fff;--border:#E5E5E3;--border-strong:#D1D1CF;
+  --text:#1A1A18;--text-2:#6B6B68;--text-3:#9B9B98;
+  --accent:#E85D2F;--accent-bg:#FEF0EB;--accent-text:#B83E18;
+  --green:#16A34A;--green-bg:#F0FDF4;--green-text:#15803D;
+  --amber:#D97706;--amber-bg:#FFFBEB;--amber-text:#B45309;
+  --red:#DC2626;--red-bg:#FEF2F2;--red-text:#B91C1C;
+  --blue:#2563EB;--blue-bg:#EFF6FF;--blue-text:#1D4ED8;
+  --r:8px;--r-lg:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.05);
+  --sidebar-w:220px;
+}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+
+/* ── LAYOUT ── */
+.layout{display:flex;min-height:100vh}
+
+/* ── OVERLAY MOBILE ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;backdrop-filter:blur(2px)}
+.sidebar-overlay.open{display:block}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);
+  flex-shrink:0;display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:15px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600;flex-shrink:0}
+.sidebar-close{display:none;padding:6px;border:none;background:none;cursor:pointer;color:var(--text-3);font-size:18px;border-radius:var(--r)}
+.sidebar-nav{padding:12px 10px;flex:1;overflow-y:auto}
+.nav-label{font-size:11px;font-weight:500;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;padding:8px 8px 4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:var(--r);cursor:pointer;color:var(--text-2);font-size:13.5px;transition:all .15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--accent-bg);color:var(--accent-text);font-weight:500}
+.nav-icon{width:20px;text-align:center;font-size:16px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:11px;font-weight:500;padding:2px 6px;border-radius:20px}
+.sidebar-footer{padding:14px 10px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);cursor:pointer;transition:background .15s}
+.user-card:hover{background:var(--bg)}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--accent-text);flex-shrink:0}
+.user-info .uname{font-size:13px;font-weight:500;color:var(--text)}
+.user-info .urole{font-size:11px;color:var(--text-3)}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-width:0;width:calc(100% - var(--sidebar-w))}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;gap:12px}
+.topbar-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.page-title{font-size:16px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+/* Hamburger */
+.hamburger{display:none;padding:8px;border:none;background:none;cursor:pointer;border-radius:var(--r);color:var(--text-2);flex-shrink:0}
+.hamburger:hover{background:var(--bg)}
+.hamburger svg{display:block}
+.content{padding:20px;flex:1;min-width:0;overflow-x:hidden}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);font-size:13.5px;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:inherit;line-height:1;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#d04e22}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border-strong)}.btn-secondary:hover{background:var(--bg)}
+.btn-ghost{background:none;color:var(--text-2);padding:6px 10px}.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-danger{background:var(--red-bg);color:var(--red-text);border:1px solid #FECACA}.btn-danger:hover{background:#FEE2E2}
+.btn-success{background:var(--green-bg);color:var(--green-text);border:1px solid #86EFAC}.btn-success:hover{background:#DCFCE7}
+.btn-blue{background:var(--blue-bg);color:var(--blue-text);border:1px solid #BFDBFE}.btn-blue:hover{background:#DBEAFE}
+.btn-sm{padding:6px 11px;font-size:13px}
+.btn-icon{padding:7px;border-radius:var(--r)}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow)}
+.card-header{padding:16px 18px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.card-title{font-size:14px;font-weight:600;color:var(--text)}
+.card-body{padding:18px}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px}
+.stat-label{font-size:12px;color:var(--text-3);font-weight:500;margin-bottom:5px}
+.stat-value{font-size:20px;font-weight:600;color:var(--text);margin-bottom:3px}
+.stat-sub{font-size:11px;color:var(--text-3)}
+.stat-change{font-size:12px}.stat-change.up{color:var(--green)}.stat-change.down{color:var(--red)}
+
+/* ── MOBILE CARDS (remplace tableau sur mobile) ── */
+.inv-card-list{display:none;flex-direction:column;gap:10px}
+.inv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;cursor:pointer;transition:box-shadow .15s}
+.inv-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.inv-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.inv-card-num{font-size:14px;font-weight:600;color:var(--text)}
+.inv-card-client{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.inv-card-dates{font-size:12px;color:var(--text-3)}
+.inv-card-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.inv-card-amount{font-size:15px;font-weight:600;color:var(--text)}
+
+/* ── TABLE (desktop) ── */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:500px}
+thead th{padding:10px 14px;text-align:left;font-size:12px;font-weight:500;color:var(--text-3);border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#FAFAF9}
+tbody td{padding:12px 14px;font-size:13.5px;color:var(--text)}
+tbody td.muted{color:var(--text-2)}
+.desktop-table{display:block}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:500}
+.badge-green{background:var(--green-bg);color:var(--green-text)}
+.badge-amber{background:var(--amber-bg);color:var(--amber-text)}
+.badge-red{background:var(--red-bg);color:var(--red-text)}
+.badge-blue{background:var(--blue-bg);color:var(--blue-text)}
+.badge-gray{background:#F3F4F6;color:#374151}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7}
+
+/* ── FORMS ── */
+.form-group{margin-bottom:15px}
+.form-label{display:block;font-size:12.5px;font-weight:500;color:var(--text-2);margin-bottom:5px}
+.form-control{width:100%;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--r);font-size:14px;color:var(--text);background:var(--surface);font-family:inherit;transition:border-color .15s,box-shadow .15s;outline:none;-webkit-appearance:none}
+.form-control:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,93,47,.12)}
+.form-control::placeholder{color:var(--text-3)}
+select.form-control{cursor:pointer}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+/* ── FILTERS ── */
+.filters-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.search-box{position:relative;flex:1;min-width:160px}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:14px;pointer-events:none}
+.filter-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.filter-tabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:3px;white-space:nowrap;width:fit-content}
+.filter-tab{padding:5px 12px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--text-2);border:none;background:none;font-family:inherit;transition:all .15s;white-space:nowrap}
+.filter-tab.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:var(--shadow)}
+
+/* ── INVOICE SPLIT ── */
+.inv-split{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:calc(100vh - 56px);margin:-20px}
+.inv-form-panel{padding:24px 20px;border-right:1px solid var(--border);overflow-y:auto;max-height:calc(100vh - 56px)}
+.inv-prev-panel{padding:20px;background:#F0F0EE;overflow-y:auto;max-height:calc(100vh - 56px)}
+
+/* ── SECTION DIVIDER ── */
+.section-divider{font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;padding:12px 0 7px;border-bottom:1px solid var(--border);margin-bottom:12px}
+
+/* ── LINE ITEMS ── */
+.li-header{display:grid;grid-template-columns:1fr 60px 85px 75px 28px;gap:5px;padding-bottom:7px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.li-header span{font-size:11px;font-weight:500;color:var(--text-3)}
+.li-row{display:grid;grid-template-columns:1fr 60px 85px 75px 28px;gap:5px;margin-bottom:7px;align-items:center}
+.li-total{padding:8px 10px;border-radius:var(--r);background:var(--bg);font-size:13px;font-weight:500;color:var(--text);text-align:right;border:1px solid var(--border)}
+.btn-rm{padding:5px;border-radius:var(--r);background:none;border:1px solid var(--border);color:var(--text-3);cursor:pointer;transition:all .15s;font-size:13px;line-height:1}
+.btn-rm:hover{background:var(--red-bg);border-color:#FECACA;color:var(--red-text)}
+
+/* ── TOTALS ── */
+.totals-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;margin:12px 0}
+.tot-row{display:flex;justify-content:space-between;padding:3px 0;font-size:13.5px}
+.tot-row.grand{padding-top:10px;margin-top:6px;border-top:1px solid var(--border-strong);font-weight:600;font-size:15px}
+.tot-row:not(.grand) .tl{color:var(--text-2)}
+
+/* ── PREVIEW ── */
+.inv-preview{background:#fff;border-radius:var(--r-lg);box-shadow:0 4px 24px rgba(0,0,0,.1);padding:28px;max-width:500px;margin:0 auto}
+.prev-logo-area{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:10px}
+.prev-logo{width:46px;height:46px;background:var(--text);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:1.2;flex-shrink:0}
+.prev-invoice-title{font-size:18px;font-weight:700;color:var(--text)}
+.prev-meta{font-size:11px;color:var(--text-2);margin-top:3px;text-align:right}
+.prev-meta b{color:var(--text)}
+.prev-parties{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.prev-party-lbl{font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.prev-party-name{font-size:13px;font-weight:600;color:var(--text)}
+.prev-party-detail{font-size:11px;color:var(--text-2);line-height:1.7}
+.prev-tbl{width:100%;border-collapse:collapse;margin-bottom:18px}
+.prev-tbl thead th{font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;padding:6px 8px;border-bottom:2px solid var(--border);text-align:left}
+.prev-tbl thead th.r{text-align:right}
+.prev-tbl tbody td{padding:8px;font-size:12px;color:var(--text);border-bottom:1px solid var(--border)}
+.prev-tbl tbody td.r{text-align:right}
+.prev-totals{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.prev-tot-row{display:flex;gap:28px;font-size:12px}
+.prev-tot-row .pl{color:var(--text-2);min-width:90px;text-align:right}
+.prev-tot-row .pr{color:var(--text);font-weight:500;min-width:75px;text-align:right}
+.prev-tot-row.grand{padding-top:8px;border-top:2px solid var(--text);margin-top:4px}
+.prev-tot-row.grand .pl,.prev-tot-row.grand .pr{font-size:14px;font-weight:700}
+.prev-notes{margin-top:18px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--text-2)}
+.prev-stamp{display:inline-block;border:3px solid;padding:3px 10px;border-radius:4px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-top:14px;transform:rotate(-8deg)}
+.prev-stamp.paid{color:var(--green);border-color:var(--green)}
+.prev-stamp.overdue{color:var(--red);border-color:var(--red)}
+
+/* ── DETAIL ── */
+.detail-layout{display:grid;grid-template-columns:1fr 280px;gap:20px}
+.status-timeline{list-style:none}
+.status-timeline li{display:flex;gap:12px;padding-bottom:16px;position:relative}
+.status-timeline li::before{content:'';position:absolute;left:13px;top:27px;bottom:0;width:1px;background:var(--border)}
+.status-timeline li:last-child::before{display:none}
+.tl-dot{width:26px;height:26px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;z-index:1}
+.tl-dot.active{border-color:var(--accent);background:var(--accent-bg)}
+.tl-evt{font-size:13px;font-weight:500;color:var(--text)}
+.tl-date{font-size:11.5px;color:var(--text-3);margin-top:2px}
+
+/* ── CLIENTS ── */
+.clients-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.client-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;transition:box-shadow .15s}
+.client-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.cl-detail{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2);margin-bottom:7px;word-break:break-all}
+.cl-icon{color:var(--text-3);width:16px;flex-shrink:0}
+.cl-stat{background:var(--bg);border-radius:var(--r);padding:8px 12px}
+.cl-stat-lbl{font-size:11px;color:var(--text-3);margin-bottom:2px}
+.cl-stat-val{font-size:13px;font-weight:600;color:var(--text)}
+
+/* ── SETTINGS ── */
+.settings-layout{display:grid;grid-template-columns:190px 1fr;gap:20px}
+.settings-nav{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:8px;height:fit-content}
+.settings-nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--text-2);border:none;background:none;width:100%;text-align:left;transition:all .15s;margin-bottom:2px}
+.settings-nav-item:hover{background:var(--bg);color:var(--text)}
+.settings-nav-item.active{background:var(--accent-bg);color:var(--accent-text);font-weight:500}
+.settings-section{display:none}.settings-section.active{display:block}
+.logo-upload-area{border:2px dashed var(--border-strong);border-radius:var(--r-lg);padding:24px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:16px}
+.logo-upload-area:hover{border-color:var(--accent);background:var(--accent-bg)}
+.logo-preview{width:72px;height:72px;border-radius:var(--r-lg);margin:0 auto 10px;overflow:hidden;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+.color-swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.swatch.active{border-color:var(--text);transform:scale(1.1)}
+.switch-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border);gap:16px}
+.switch-row:last-child{border-bottom:none}
+.sw-title{font-size:13.5px;font-weight:500;color:var(--text)}
+.sw-desc{font-size:12px;color:var(--text-3);margin-top:2px}
+.switch{width:40px;height:22px;background:#D1D5DB;border-radius:11px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.switch.on{background:var(--accent)}
+.switch::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch.on::after{transform:translateX(18px)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.modal{background:var(--surface);border-radius:var(--r-lg) var(--r-lg) 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.15);width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
+.modal-header{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-title{font-size:15px;font-weight:600}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--surface)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:11px 18px;border-radius:24px;font-size:13.5px;z-index:999;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);animation:toast-in .2s ease;white-space:nowrap}
+@keyframes toast-in{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* ── PAGES ── */
+.page{display:none}.page.active{display:block}
+.inv-split{display:none}.inv-split.active{display:grid}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:90;padding:6px 0 env(safe-area-inset-bottom)}
+.mobile-nav-inner{display:flex;align-items:center;justify-content:space-around}
+.mobile-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border:none;background:none;cursor:pointer;color:var(--text-3);font-size:10px;font-weight:500;font-family:inherit;border-radius:var(--r);transition:color .15s;min-width:56px}
+.mobile-nav-item:hover,.mobile-nav-item.active{color:var(--accent)}
+.mobile-nav-icon{font-size:20px;line-height:1}
+.mobile-nav-badge{position:absolute;top:-2px;right:-4px;background:var(--accent);color:#fff;font-size:9px;font-weight:600;padding:1px 4px;border-radius:10px}
+.mobile-nav-icon-wrap{position:relative}
+
+
+/* ── AUTOCOMPLETE CLIENT ── */
+.client-sugg-item{padding:10px 14px;cursor:pointer;font-size:13.5px;color:var(--text);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);transition:background .1s}
+.client-sugg-item:last-child{border-bottom:none}
+.client-sugg-item:hover,.client-sugg-item.focused{background:var(--accent-bg);color:var(--accent-text)}
+.client-sugg-item .sugg-name{font-weight:500}
+.client-sugg-item .sugg-company{font-size:12px;color:var(--text-3);margin-top:1px}
+.client-sugg-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.client-sugg-new{padding:10px 14px;cursor:pointer;font-size:13px;color:var(--accent);display:flex;align-items:center;gap:8px;font-weight:500}
+.client-sugg-new:hover{background:var(--accent-bg)}
+
+/* ── CONFIRM ── */
+.confirm-box{background:var(--red-bg);border:1px solid #FECACA;border-radius:var(--r);padding:13px 15px;margin-bottom:14px;font-size:13.5px;color:var(--red-text)}
+
+/* ── SEND MODAL ── */
+.send-field{background:var(--blue-bg);border:1px solid #BFDBFE;border-radius:var(--r);padding:11px 13px;margin-bottom:12px}
+.send-field .sf-label{font-size:10px;font-weight:600;color:var(--blue-text);text-transform:uppercase;margin-bottom:3px}
+.send-field .sf-value{font-size:13.5px;color:var(--text);font-weight:500}
+
+/* ──────────────────────────────────────────────────────
+   RESPONSIVE
+────────────────────────────────────────────────────── */
+@media(max-width:768px){
+  /* Sidebar slides in/out */
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-close{display:flex;align-items:center;justify-content:center}
+  /* Main takes full width */
+  .main{margin-left:0;width:100%}
+  /* Show hamburger */
+  .hamburger{display:flex}
+  /* Show mobile bottom nav */
+  .mobile-nav{display:block}
+  /* Add padding at bottom for nav */
+  .content{padding:16px;padding-bottom:80px}
+  /* Stats: 2 cols */
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  .stat-value{font-size:18px}
+  /* Tables → cards */
+  .desktop-table{display:none}
+  .inv-card-list{display:flex}
+  /* Invoice split → single column */
+  .inv-split.active{grid-template-columns:1fr;margin:-16px;margin-bottom:-80px}
+  .inv-form-panel{max-height:none;border-right:none;border-bottom:1px solid var(--border);padding:16px}
+  .inv-prev-panel{display:none}
+  /* Detail */
+  .detail-layout{grid-template-columns:1fr}
+  /* Clients */
+  .clients-grid{grid-template-columns:1fr}
+  /* Settings */
+  .settings-layout{grid-template-columns:1fr}
+  .settings-nav{display:flex;overflow-x:auto;gap:4px;padding:6px;margin-bottom:16px;-webkit-overflow-scrolling:touch}
+  .settings-nav-item{white-space:nowrap;padding:7px 12px;margin-bottom:0}
+  /* Forms */
+  .form-row{grid-template-columns:1fr}
+  .form-row-3{grid-template-columns:1fr}
+  /* Line items mobile */
+  .li-header{grid-template-columns:1fr 50px 70px 60px 26px;font-size:10px}
+  .li-row{grid-template-columns:1fr 50px 70px 60px 26px}
+  /* Modal full width from bottom */
+  .modal{border-radius:var(--r-lg) var(--r-lg) 0 0;max-width:100%}
+  /* Top new invoice btn — smaller */
+  .topbar-right .btn-sm span.btn-label{display:none}
+  /* Filter scroll */
+  .filter-tabs{min-width:max-content}
+  /* Toast at bottom */
+  .toast{bottom:76px;font-size:13px;padding:10px 16px}
+  /* Action buttons in detail — wrap */
+  .detail-actions{flex-wrap:wrap;gap:6px}
+}
+
+@media(max-width:400px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .stat-value{font-size:16px}
+  .inv-card-amount{font-size:13px}
+}
+
+/* Desktop modal centered */
+@media(min-width:769px){
+  .modal-overlay{align-items:center;padding:20px}
+  .modal{border-radius:var(--r-lg);max-width:520px}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">
+      <div class="logo-mark" id="sb-logo-mark">F</div>
+      <span id="sb-company-name">FacturePro</span>
+    </div>
+    <button class="sidebar-close" onclick="closeSidebar()" aria-label="Fermer menu">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Principal</div>
+    <button class="nav-item active" onclick="nav('dashboard')"><span class="nav-icon">⊟</span>Tableau de bord</button>
+    <button class="nav-item" onclick="nav('invoices')"><span class="nav-icon">◧</span>Factures<span class="nav-badge">3</span></button>
+    <button class="nav-item" onclick="nav('clients')"><span class="nav-icon">◎</span>Clients</button>
+    <div class="nav-label" style="margin-top:10px">Entreprise</div>
+    <button class="nav-item" onclick="nav('settings')"><span class="nav-icon">⚙</span>Paramètres</button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card" onclick="nav('settings')">
+      <div class="avatar" id="sb-avatar">JM</div>
+      <div class="user-info">
+        <div class="uname" id="sb-username">Jean Mbeki</div>
+        <div class="urole">Administrateur</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="openSidebar()" aria-label="Menu">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="2" y1="5" x2="18" y2="5"/><line x1="2" y1="10" x2="18" y2="10"/><line x1="2" y1="15" x2="18" y2="15"/>
+        </svg>
+      </button>
+      <div class="page-title" id="pageTitle">Tableau de bord</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-primary btn-sm" onclick="nav('invoice-create')">+ <span class="btn-label">Nouvelle facture</span></button>
+    </div>
+  </header>
+
+  <div class="content" id="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total facturé</div><div class="stat-value">4 250 000</div><div class="stat-change up">↑ +12%</div><div class="stat-sub">FCFA</div></div>
+        <div class="stat-card"><div class="stat-label">En attente</div><div class="stat-value">1 180 000</div><div class="stat-change" style="color:var(--amber)">3 ouvertes</div><div class="stat-sub">FCFA</div></div>
+        <div class="stat-card"><div class="stat-label">En retard</div><div class="stat-value">350 000</div><div class="stat-change down">1 échue</div><div class="stat-sub">FCFA</div></div>
+        <div class="stat-card"><div class="stat-label">Clients</div><div class="stat-value">8</div><div class="stat-change up">↑ +2</div><div class="stat-sub">actifs</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Factures récentes</div><button class="btn btn-ghost btn-sm" onclick="nav('invoices')">Voir tout →</button></div>
+        <!-- Desktop -->
+        <div class="desktop-table table-wrap"><table>
+          <thead><tr><th>N°</th><th>Client</th><th>Date</th><th>Montant</th><th>Statut</th></tr></thead>
+          <tbody>
+            <tr onclick="openDetail(0)"><td><strong>#001</strong></td><td>Agence Alpha</td><td class="muted">12 sept. 2026</td><td><strong>590 000 FCFA</strong></td><td><span class="badge badge-amber"><span class="badge-dot"></span>Envoyée</span></td></tr>
+            <tr onclick="openDetail(1)"><td><strong>#002</strong></td><td>Tech Innov SARL</td><td class="muted">8 sept. 2026</td><td><strong>1 180 000 FCFA</strong></td><td><span class="badge badge-red"><span class="badge-dot"></span>En retard</span></td></tr>
+            <tr onclick="openDetail(2)"><td><strong>#003</strong></td><td>Maison Ekié</td><td class="muted">5 sept. 2026</td><td><strong>236 000 FCFA</strong></td><td><span class="badge badge-green"><span class="badge-dot"></span>Payée</span></td></tr>
+          </tbody>
+        </table></div>
+        <!-- Mobile cards -->
+        <div class="inv-card-list" style="padding:12px">
+          <div class="inv-card" onclick="openDetail(0)"><div class="inv-card-top"><span class="inv-card-num">#001 — Agence Alpha</span><span class="badge badge-amber"><span class="badge-dot"></span>Envoyée</span></div><div class="inv-card-dates">Émis 12 sept. · Éch. 30 sept.</div><div class="inv-card-bottom"><span class="inv-card-amount">590 000 FCFA</span></div></div>
+          <div class="inv-card" onclick="openDetail(1)"><div class="inv-card-top"><span class="inv-card-num">#002 — Tech Innov SARL</span><span class="badge badge-red"><span class="badge-dot"></span>En retard</span></div><div class="inv-card-dates">Émis 8 sept. · Éch. 22 sept.</div><div class="inv-card-bottom"><span class="inv-card-amount">1 180 000 FCFA</span></div></div>
+          <div class="inv-card" onclick="openDetail(2)"><div class="inv-card-top"><span class="inv-card-num">#003 — Maison Ekié</span><span class="badge badge-green"><span class="badge-dot"></span>Payée</span></div><div class="inv-card-dates">Émis 5 sept. · Éch. 25 sept.</div><div class="inv-card-bottom"><span class="inv-card-amount">236 000 FCFA</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ INVOICES ══ -->
+    <div class="page" id="page-invoices">
+      <div class="filters-bar">
+        <div class="filter-scroll" style="flex:1">
+          <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterInv('all',this)">Toutes</button>
+            <button class="filter-tab" onclick="filterInv('draft',this)">Brouillon</button>
+            <button class="filter-tab" onclick="filterInv('sent',this)">Envoyées</button>
+            <button class="filter-tab" onclick="filterInv('paid',this)">Payées</button>
+            <button class="filter-tab" onclick="filterInv('overdue',this)">En retard</button>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="nav('invoice-create')">+</button>
+      </div>
+      <div class="search-box" style="margin-bottom:14px">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="form-control" placeholder="Rechercher un client…" oninput="searchInv(this.value)" style="padding-left:34px">
+      </div>
+      <!-- Desktop table -->
+      <div class="card desktop-table"><div class="table-wrap">
+        <table><thead><tr><th>N°</th><th>Client</th><th>Émission</th><th>Échéance</th><th>Montant TTC</th><th>Statut</th><th></th></tr></thead>
+        <tbody id="invTbody"></tbody></table>
+      </div></div>
+      <!-- Mobile cards -->
+      <div class="inv-card-list" id="invCardList"></div>
+    </div>
+
+    <!-- ══ INVOICE CREATE ══ -->
+    <div class="inv-split" id="page-invoice-create">
+      <div class="inv-form-panel">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+          <button class="btn btn-ghost btn-sm" onclick="nav('invoices')">← Retour</button>
+          <h2 style="font-size:15px;font-weight:600" id="formTitle">Nouvelle facture</h2>
+        </div>
+        <div class="section-divider">1 — Identification</div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">N° Facture *</label><input class="form-control" id="fc-num" value="#007" oninput="rp()"></div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Référence</label><input class="form-control" id="fc-ref" placeholder="ex : PROJ-2026" oninput="rp()"></div>
+        </div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Type</label>
+            <select class="form-control" id="fc-type" onchange="rp()"><option>Facture</option><option>Devis</option><option>Bon de commande</option><option>Avoir</option><option>Pro forma</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Langue</label>
+            <select class="form-control" id="fc-lang" onchange="rp()"><option value="fr">Français</option><option value="en">English</option></select>
+          </div>
+        </div>
+        <div class="section-divider">2 — Client</div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Client *</label>
+            <div style="position:relative">
+              <input type="text" class="form-control" id="fc-client" placeholder="Saisir ou chercher un client…" oninput="onClientInput(this.value)" onblur="hideClientSugg()" onfocus="showAllSugg()" autocomplete="off" style="padding-right:32px">
+              <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:12px;cursor:pointer" onclick="g('fc-client').focus();showAllSugg()">▾</span>
+              <div id="client-sugg" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border-strong);border-top:none;border-radius:0 0 var(--r) var(--r);z-index:150;max-height:200px;overflow-y:auto;box-shadow:0 8px 20px rgba(0,0,0,.12)"></div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Contact</label><input class="form-control" id="fc-contact" placeholder="Nom du contact" oninput="rp()"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Adresse de facturation</label><textarea class="form-control" id="fc-bill-addr" rows="2" oninput="rp()"></textarea></div>
+        <div class="section-divider">3 — Dates & Conditions</div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Date d'émission *</label><input type="date" class="form-control" id="fc-issue" onchange="rp()"></div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Date d'échéance *</label><input type="date" class="form-control" id="fc-due" onchange="rp()"></div>
+        </div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Livraison</label><input type="date" class="form-control" id="fc-delivery" onchange="rp()"></div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Conditions</label>
+            <select class="form-control" id="fc-terms" onchange="rp()"><option>Paiement à réception</option><option>Net 15 jours</option><option>Net 30 jours</option><option>Net 45 jours</option><option>50% d'avance</option></select>
+          </div>
+        </div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Mode de paiement</label>
+            <select class="form-control" id="fc-payment" onchange="rp()"><option>Virement bancaire</option><option>Mobile Money</option><option>Espèces</option><option>Chèque</option><option>Carte bancaire</option></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Devise</label>
+            <select class="form-control" id="fc-currency" onchange="rp()"><option value="FCFA">FCFA (XAF)</option><option value="EUR">Euro (€)</option><option value="USD">Dollar ($)</option></select>
+          </div>
+        </div>
+        <div class="section-divider">4 — Lignes de facturation</div>
+        <div class="li-header"><span>Description</span><span>Qté</span><span>P.U.</span><span>Total</span><span></span></div>
+        <div id="lineItems"></div>
+        <button class="btn btn-ghost btn-sm" onclick="addLine()" style="color:var(--accent);margin-top:4px">+ Ajouter une ligne</button>
+        <div class="section-divider" style="margin-top:16px">5 — Remises & Taxes</div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Remise globale (%)</label><input type="number" class="form-control" id="fc-discount" value="0" min="0" max="100" oninput="rp()"></div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">TVA (%)</label>
+            <select class="form-control" id="fc-tva-rate" onchange="rp()"><option value="0">Exonéré (0%)</option><option value="5.5">5,5%</option><option value="10">10%</option><option value="18" selected>18%</option><option value="19.25">19,25%</option></select>
+          </div>
+        </div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Acompte versé</label><input type="number" class="form-control" id="fc-deposit" value="0" min="0" oninput="rp()"></div>
+        </div>
+        <div class="totals-box">
+          <div class="tot-row"><span class="tl">Sous-total HT</span><span id="fc-sub">0</span></div>
+          <div class="tot-row" id="fc-disc-row" style="display:none"><span class="tl">Remise (<span id="fc-disc-pct">0</span>%)</span><span id="fc-disc-amt">-0</span></div>
+          <div class="tot-row"><span class="tl">TVA (<span id="fc-tva-pct">18</span>%)</span><span id="fc-tva-amt">0</span></div>
+          <div class="tot-row" id="fc-dep-row" style="display:none"><span class="tl">Acompte</span><span id="fc-dep-amt">-0</span></div>
+          <div class="tot-row grand"><span class="tl">Total TTC</span><span id="fc-total">0</span></div>
+          <div class="tot-row" id="fc-remain-row" style="display:none"><span class="tl" style="color:var(--accent)">Reste à payer</span><span id="fc-remain" style="color:var(--accent);font-weight:600">0</span></div>
+        </div>
+        <div class="section-divider">6 — Coordonnées bancaires</div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Banque</label><input class="form-control" id="fc-bank" placeholder="Afriland First Bank" oninput="rp()"></div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">IBAN / N° Compte</label><input class="form-control" id="fc-iban" placeholder="CM21 3001…" oninput="rp()"></div>
+        </div>
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Mobile Money</label><input class="form-control" id="fc-momo" placeholder="+237 6XX…" oninput="rp()"></div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">BIC / SWIFT</label><input class="form-control" id="fc-bic" placeholder="AFBACMCX" oninput="rp()"></div>
+        </div>
+        <div class="section-divider">7 — Mentions & Notes</div>
+        <div class="form-group"><label class="form-label">Objet</label><input class="form-control" id="fc-subject" placeholder="ex : Développement web Phase 2" oninput="rp()"></div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" id="fc-notes" rows="2" placeholder="Conditions particulières…" oninput="rp()"></textarea></div>
+        <div class="form-group"><label class="form-label">Mentions légales</label><textarea class="form-control" id="fc-legal" rows="2" placeholder="RCCM, N° contribuable…" oninput="rp()"></textarea></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn btn-secondary" onclick="saveInv('draft')" style="flex:1;min-width:120px">💾 Brouillon</button>
+          <button class="btn btn-blue" onclick="openSendModal()" style="flex:1;min-width:120px">✉ Envoyer</button>
+          <button class="btn btn-primary" onclick="saveInv('sent')" style="flex:1;min-width:120px">✓ Valider</button>
+        </div>
+      </div>
+      <div class="inv-prev-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <span style="font-size:12px;font-weight:500;color:var(--text-3)">Aperçu temps réel</span>
+          <button class="btn btn-ghost btn-sm" onclick="showToast('📄 PDF exporté !')">↓ PDF</button>
+        </div>
+        <div class="inv-preview" id="invoicePreview">
+          <div class="prev-logo-area">
+            <div class="prev-logo">FACT<br>PRO</div>
+            <div style="text-align:right">
+              <div class="prev-invoice-title" id="prev-doctype">Facture <span id="prev-num">#007</span></div>
+              <div class="prev-meta">Émis <b id="prev-issue">—</b></div>
+              <div class="prev-meta">Éch. <b id="prev-due">—</b></div>
+              <div class="prev-meta" id="prev-ref-line" style="display:none">Réf : <b id="prev-ref"></b></div>
+            </div>
+          </div>
+          <div class="prev-parties">
+            <div><div class="prev-party-lbl">De</div><div class="prev-party-name">FacturePro</div><div class="prev-party-detail">Jean Mbeki<br>Yaoundé, Cameroun</div></div>
+            <div><div class="prev-party-lbl">À</div><div class="prev-party-name" id="prev-to-name">—</div><div class="prev-party-detail" id="prev-to-detail">Sélectionner un client</div></div>
+          </div>
+          <table class="prev-tbl">
+            <thead><tr><th>Description</th><th>Qté</th><th class="r">P.U.</th><th class="r">Total</th></tr></thead>
+            <tbody id="prev-lines"><tr><td colspan="4" style="color:var(--text-3);text-align:center;padding:16px;font-size:12px">Aucune ligne</td></tr></tbody>
+          </table>
+          <div class="prev-totals">
+            <div class="prev-tot-row"><span class="pl">Sous-total HT</span><span class="pr" id="psub">0</span></div>
+            <div class="prev-tot-row" id="pdisc-row" style="display:none"><span class="pl">Remise</span><span class="pr" id="pdisc">-0</span></div>
+            <div class="prev-tot-row"><span class="pl">TVA (<span id="ptva-pct">18</span>%)</span><span class="pr" id="ptva">0</span></div>
+            <div class="prev-tot-row" id="pdep-row" style="display:none"><span class="pl">Acompte</span><span class="pr" id="pdep">-0</span></div>
+            <div class="prev-tot-row grand"><span class="pl">Total TTC</span><span class="pr" id="ptotal">0</span></div>
+          </div>
+          <div class="prev-notes" id="prev-bank-section" style="display:none"><b>Paiement</b><div id="prev-bank-detail" style="margin-top:4px"></div></div>
+          <div class="prev-notes" id="prev-notes-section" style="display:none"><div id="prev-notes-content"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ INVOICE DETAIL ══ -->
+    <div class="page" id="page-invoice-detail">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap" class="detail-actions">
+        <button class="btn btn-ghost btn-sm" onclick="nav('invoices')">← Retour</button>
+        <h2 style="font-size:15px;font-weight:600" id="detailTitle">Facture #001</h2>
+        <span id="detailBadge"></span>
+        <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-success btn-sm" onclick="openSendModalDetail()">✉ Envoyer</button>
+          <button class="btn btn-secondary btn-sm" onclick="editInv()">✏ Modifier</button>
+          <button class="btn btn-secondary btn-sm" onclick="changeStatus()">⟳ Statut</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteInv()">✕</button>
+        </div>
+      </div>
+      <div class="detail-layout">
+        <div>
+          <div class="card"><div class="inv-preview" style="box-shadow:none;border:none;padding:20px" id="detailPreview"></div></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-header"><div class="card-title">Activité</div></div>
+            <div class="card-body"><ul class="status-timeline" id="detailTimeline"></ul></div>
+          </div>
+          <div class="card"><div class="card-body" id="detailClientInfo"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CLIENTS ══ -->
+    <div class="page" id="page-clients">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px">
+        <div class="search-box" style="flex:1">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="form-control" placeholder="Rechercher…" oninput="searchCl(this.value)" style="padding-left:34px">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openClientModal()">+ Ajouter</button>
+      </div>
+      <div class="clients-grid" id="clientsGrid"></div>
+    </div>
+
+    <!-- ══ SETTINGS ══ -->
+    <div class="page" id="page-settings">
+      <div class="settings-layout">
+        <div class="settings-nav">
+          <button class="settings-nav-item active" onclick="openSettingsTab('profile',this)">🏢 Entreprise</button>
+          <button class="settings-nav-item" onclick="openSettingsTab('invoice',this)">📄 Factures</button>
+          <button class="settings-nav-item" onclick="openSettingsTab('bank',this)">🏦 Banque</button>
+          <button class="settings-nav-item" onclick="openSettingsTab('notifications',this)">🔔 Notifs</button>
+          <button class="settings-nav-item" onclick="openSettingsTab('users',this)">👥 Utilisateurs</button>
+          <button class="settings-nav-item" onclick="openSettingsTab('security',this)">🔒 Sécurité</button>
+        </div>
+        <div>
+          <!-- Entreprise -->
+          <div class="settings-section active card" id="st-profile">
+            <div class="card-header"><div class="card-title">Informations entreprise</div><button class="btn btn-primary btn-sm" onclick="saveProfile()">Enregistrer</button></div>
+            <div class="card-body">
+              <div id="logo-upload-area" class="logo-upload-area" onclick="document.getElementById('logo-input').click()">
+                <div class="logo-preview" id="logo-preview-box"><span style="font-size:24px;color:var(--text-3)">🖼</span></div>
+                <div style="font-size:13px;font-weight:500;color:var(--text-2)">Cliquer pour choisir un logo</div>
+                <div style="font-size:12px;color:var(--text-3);margin-top:3px">PNG, JPG · Max 2 Mo</div>
+                <input type="file" id="logo-input" accept="image/*" style="display:none" onchange="handleLogoUpload(event)">
+              </div>
+              <div class="form-row"><div class="form-group"><label class="form-label">Nom de l'entreprise *</label><input class="form-control" id="st-company" value="FacturePro" oninput="liveUpdateSidebar()"></div><div class="form-group"><label class="form-label">Forme juridique</label><select class="form-control" id="st-legal-form"><option>SARL</option><option>SA</option><option>Auto-entrepreneur</option><option>Entreprise individuelle</option><option>ONG</option></select></div></div>
+              <div class="form-row"><div class="form-group"><label class="form-label">N° RCCM</label><input class="form-control" id="st-rccm" placeholder="RC/YAO/2022/A/1234"></div><div class="form-group"><label class="form-label">N° Contribuable</label><input class="form-control" id="st-tax" placeholder="M123456789A"></div></div>
+              <div class="form-row"><div class="form-group"><label class="form-label">Email</label><input type="email" class="form-control" id="st-email" value="contact@facturepro.cm"></div><div class="form-group"><label class="form-label">Téléphone</label><input type="tel" class="form-control" id="st-phone" value="+237 691 000 000"></div></div>
+              <div class="form-group"><label class="form-label">Site web</label><input class="form-control" id="st-website" placeholder="https://www.votre-site.cm"></div>
+              <div class="form-group"><label class="form-label">Adresse</label><textarea class="form-control" id="st-address" rows="2">Rue de la Réunification, Bastos, Yaoundé</textarea></div>
+              <div class="form-group"><label class="form-label">Nom de l'administrateur</label><input class="form-control" id="st-admin" value="Jean Mbeki" oninput="liveUpdateSidebar()"></div>
+            </div>
+          </div>
+          <!-- Factures -->
+          <div class="settings-section card" id="st-invoice">
+            <div class="card-header"><div class="card-title">Paramètres de facturation</div><button class="btn btn-primary btn-sm" onclick="showToast('✓ Enregistré')">Enregistrer</button></div>
+            <div class="card-body">
+              <div class="form-row"><div class="form-group"><label class="form-label">Préfixe</label><input class="form-control" id="st-prefix" value="INV-"></div><div class="form-group"><label class="form-label">Numéro suivant</label><input type="number" class="form-control" id="st-next-num" value="8" min="1"></div></div>
+              <div class="form-row"><div class="form-group"><label class="form-label">TVA par défaut</label><select class="form-control" id="st-default-tva"><option value="0">0%</option><option value="18" selected>18%</option><option value="19.25">19,25%</option></select></div><div class="form-group"><label class="form-label">Devise par défaut</label><select class="form-control" id="st-default-currency"><option value="FCFA" selected>FCFA</option><option value="EUR">EUR €</option><option value="USD">USD $</option></select></div></div>
+              <div class="form-row"><div class="form-group"><label class="form-label">Délai paiement (jours)</label><input type="number" class="form-control" id="st-delay" value="30"></div><div class="form-group"><label class="form-label">Pénalités retard (%)</label><input type="number" class="form-control" id="st-penalty" value="1.5" step="0.1"></div></div>
+              <div class="form-group"><label class="form-label">Couleur principale</label>
+                <div class="color-swatches" id="swatches">
+                  <div class="swatch active" style="background:#E85D2F" onclick="pickColor('#E85D2F',this)"></div>
+                  <div class="swatch" style="background:#2563EB" onclick="pickColor('#2563EB',this)"></div>
+                  <div class="swatch" style="background:#16A34A" onclick="pickColor('#16A34A',this)"></div>
+                  <div class="swatch" style="background:#7C3AED" onclick="pickColor('#7C3AED',this)"></div>
+                  <div class="swatch" style="background:#DC2626" onclick="pickColor('#DC2626',this)"></div>
+                  <div class="swatch" style="background:#0891B2" onclick="pickColor('#0891B2',this)"></div>
+                  <div class="swatch" style="background:#1A1A18" onclick="pickColor('#1A1A18',this)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Banque -->
+          <div class="settings-section card" id="st-bank">
+            <div class="card-header"><div class="card-title">Coordonnées bancaires</div><button class="btn btn-primary btn-sm" onclick="showToast('✓ Enregistré')">Enregistrer</button></div>
+            <div class="card-body">
+              <div class="form-row"><div class="form-group"><label class="form-label">Banque</label><input class="form-control" id="st-bank-name" placeholder="Afriland First Bank"></div><div class="form-group"><label class="form-label">N° Compte</label><input class="form-control" id="st-bank-account" placeholder="00100 12345 67890"></div></div>
+              <div class="form-row"><div class="form-group"><label class="form-label">IBAN</label><input class="form-control" id="st-iban" placeholder="CM21 3001 4000…"></div><div class="form-group"><label class="form-label">BIC / SWIFT</label><input class="form-control" id="st-bic" placeholder="AFBACMCX"></div></div>
+              <div class="form-row"><div class="form-group"><label class="form-label">Mobile Money (MTN)</label><input class="form-control" id="st-mtn" placeholder="+237 6XX XXX XXX"></div><div class="form-group"><label class="form-label">Mobile Money (Orange)</label><input class="form-control" id="st-orange" placeholder="+237 6XX XXX XXX"></div></div>
+            </div>
+          </div>
+          <!-- Notifications -->
+          <div class="settings-section card" id="st-notifications">
+            <div class="card-header"><div class="card-title">Notifications</div></div>
+            <div class="card-body">
+              <div class="switch-row"><div><div class="sw-title">Rappel avant échéance</div><div class="sw-desc">Email 3 jours avant l'échéance</div></div><div class="switch on" onclick="toggleSwitch(this)"></div></div>
+              <div class="switch-row"><div><div class="sw-title">Alerte retard</div><div class="sw-desc">Notification dès qu'une facture est en retard</div></div><div class="switch on" onclick="toggleSwitch(this)"></div></div>
+              <div class="switch-row"><div><div class="sw-title">Confirmation paiement</div><div class="sw-desc">Email au client lors du marquage payé</div></div><div class="switch" onclick="toggleSwitch(this)"></div></div>
+              <div class="switch-row"><div><div class="sw-title">Récap hebdomadaire</div><div class="sw-desc">Résumé chaque lundi</div></div><div class="switch" onclick="toggleSwitch(this)"></div></div>
+              <div class="switch-row"><div><div class="sw-title">Copie BCC</div><div class="sw-desc">Copie à chaque envoi de facture</div></div><div class="switch on" onclick="toggleSwitch(this)"></div></div>
+            </div>
+          </div>
+          <!-- Utilisateurs -->
+          <div class="settings-section card" id="st-users">
+            <div class="card-header"><div class="card-title">Utilisateurs & Rôles</div><button class="btn btn-primary btn-sm" onclick="showToast('✉ Invitation envoyée')">+ Inviter</button></div>
+            <div class="card-body">
+              <table style="width:100%;border-collapse:collapse">
+                <thead><tr><th style="padding:8px;font-size:12px;font-weight:500;color:var(--text-3);border-bottom:1px solid var(--border);text-align:left">Utilisateur</th><th style="padding:8px;font-size:12px;font-weight:500;color:var(--text-3);border-bottom:1px solid var(--border)">Rôle</th><th style="padding:8px;font-size:12px;font-weight:500;color:var(--text-3);border-bottom:1px solid var(--border)">Statut</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><div class="avatar">JM</div><div><div style="font-size:13px;font-weight:500">Jean Mbeki</div><div style="font-size:11px;color:var(--text-3)">jean@facturepro.cm</div></div></div></td><td style="padding:10px 8px"><span class="badge badge-amber">Admin</span></td><td style="padding:10px 8px"><span class="badge badge-green"><span class="badge-dot"></span>Actif</span></td><td style="padding:10px 8px"><span style="font-size:12px;color:var(--text-3)">Vous</span></td></tr>
+                  <tr><td style="padding:10px 8px"><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="background:var(--blue-bg);color:var(--blue-text)">AL</div><div><div style="font-size:13px;font-weight:500">Aline Lome</div><div style="font-size:11px;color:var(--text-3)">aline@facturepro.cm</div></div></div></td><td style="padding:10px 8px"><span class="badge badge-gray">Comptable</span></td><td style="padding:10px 8px"><span class="badge badge-green"><span class="badge-dot"></span>Actif</span></td><td style="padding:10px 8px"><button class="btn btn-ghost btn-sm" onclick="showToast('✓ Accès supprimé')" style="font-size:12px">Retirer</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Sécurité -->
+          <div class="settings-section card" id="st-security">
+            <div class="card-header"><div class="card-title">Sécurité & Compte</div></div>
+            <div class="card-body">
+              <div style="margin-bottom:18px">
+                <div style="font-size:13.5px;font-weight:500;margin-bottom:12px">Changer le mot de passe</div>
+                <div class="form-group"><label class="form-label">Mot de passe actuel</label><input type="password" class="form-control" placeholder="••••••••"></div>
+                <div class="form-row"><div class="form-group"><label class="form-label">Nouveau</label><input type="password" class="form-control" placeholder="••••••••"></div><div class="form-group"><label class="form-label">Confirmer</label><input type="password" class="form-control" placeholder="••••••••"></div></div>
+                <button class="btn btn-secondary" onclick="showToast('✓ Mot de passe mis à jour')">Mettre à jour</button>
+              </div>
+              <div style="border-top:1px solid var(--border);padding-top:16px">
+                <div class="switch-row"><div><div class="sw-title">Double authentification (2FA)</div><div class="sw-desc">Application d'authentification</div></div><div class="switch" onclick="toggleSwitch(this)"></div></div>
+                <div class="switch-row"><div><div class="sw-title">Déconnexion automatique</div><div class="sw-desc">Après 30 min d'inactivité</div></div><div class="switch on" onclick="toggleSwitch(this)"></div></div>
+              </div>
+              <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:4px">
+                <div style="font-size:13px;font-weight:500;color:var(--red-text);margin-bottom:10px">Zone de danger</div>
+                <button class="btn btn-danger" onclick="showToast('⚠ Contactez le support')">Supprimer mon compte</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="mobile-nav-item active" id="mni-dashboard" onclick="nav('dashboard')">
+      <span class="mobile-nav-icon">⊟</span>
+      <span>Accueil</span>
+    </button>
+    <button class="mobile-nav-item" id="mni-invoices" onclick="nav('invoices')">
+      <span class="mobile-nav-icon-wrap">
+        <span class="mobile-nav-icon">◧</span>
+        <span class="mobile-nav-badge">3</span>
+      </span>
+      <span>Factures</span>
+    </button>
+    <button class="mobile-nav-item" id="mni-new" onclick="nav('invoice-create')" style="color:var(--accent)">
+      <span class="mobile-nav-icon" style="width:38px;height:38px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;margin-top:-18px;box-shadow:0 4px 14px rgba(232,93,47,.4)">+</span>
+      <span style="margin-top:4px">Nouveau</span>
+    </button>
+    <button class="mobile-nav-item" id="mni-clients" onclick="nav('clients')">
+      <span class="mobile-nav-icon">◎</span>
+      <span>Clients</span>
+    </button>
+    <button class="mobile-nav-item" id="mni-settings" onclick="nav('settings')">
+      <span class="mobile-nav-icon">⚙</span>
+      <span>Réglages</span>
+    </button>
+  </div>
+</nav>
+
+</div><!-- /layout -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" style="display:none" onclick="closeModal(event)">
+  <div class="modal" id="modalBox" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter" style="display:none"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" style="display:none"></div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const CLIENTS=[
+  {name:'Agence Alpha',company:'Agence Alpha Comm.',email:'contact@agence-alpha.cm',phone:'+237 691 234 567',address:'Avenue Kennedy, Yaoundé',color:'#dbeafe',tc:'#1e40af',initials:'AA',invoices:3,total:'1 770 000'},
+  {name:'Tech Innov SARL',company:'Tech Innov SARL',email:'info@techinnovcm.com',phone:'+237 677 890 123',address:'Rue Joseph Mballa, Yaoundé',color:'#fce7f3',tc:'#9d174d',initials:'TI',invoices:2,total:'2 360 000'},
+  {name:'Maison Ekié',company:'Maison Ekié',email:'contact@ekiehouse.cm',phone:'+237 655 445 667',address:'Akwa, Douala',color:'#d1fae5',tc:'#065f46',initials:'ME',invoices:1,total:'236 000'},
+  {name:'Cabinet Ndjama',company:'Cabinet Ndjama & Ass.',email:'ndjama@cabinetlegal.cm',phone:'+237 699 001 122',address:'Bastos, Yaoundé',color:'#fef3c7',tc:'#92400e',initials:'CN',invoices:4,total:'3 540 000'},
+  {name:'Startup Bamenda',company:'Startup Bamenda',email:'hello@startupbamenda.com',phone:'+237 674 556 789',address:'Commercial Ave, Bamenda',color:'#ede9fe',tc:'#5b21b6',initials:'SB',invoices:0,total:'0'},
+];
+let localClients=[...CLIENTS];
+const INV_DATA=[
+  {id:'001',clientName:'Agence Alpha',issue:'2026-09-12',due:'2026-09-30',delivery:'',type:'Facture',ref:'PROJ-2026-01',subject:'Création site web + maintenance',contact:'Sophie Kamga',billAddr:'Avenue Kennedy, Yaoundé',terms:'Net 30 jours',payment:'Virement bancaire',discount:0,tvaRate:18,deposit:0,currency:'FCFA',lines:[{desc:'Création site web',qty:1,price:350000},{desc:'Maintenance mensuelle',qty:3,price:80000}],bank:'Afriland First Bank',iban:'CM21 3001 4000 1234',momo:'+237 691 234 567',bic:'AFBACMCX',notes:'Paiement à 30 jours.',legal:'RCCM : RC/YAO/2022/A/1234',status:'sent'},
+  {id:'002',clientName:'Tech Innov SARL',issue:'2026-09-08',due:'2026-09-22',delivery:'',type:'Facture',ref:'DEV-MOB-2026',subject:'Application mobile',contact:'Paul Biya Jr.',billAddr:'Rue Joseph Mballa, Yaoundé',terms:"50% d'avance",payment:'Mobile Money',discount:5,tvaRate:18,deposit:500000,currency:'FCFA',lines:[{desc:'Développement application mobile',qty:1,price:1000000}],bank:'',iban:'',momo:'+237 677 890 123',bic:'',notes:'',legal:'',status:'overdue'},
+  {id:'003',clientName:'Maison Ekié',issue:'2026-09-05',due:'2026-09-25',delivery:'2026-09-10',type:'Facture',ref:'DESIGN-2026-03',subject:'Identité visuelle',contact:'',billAddr:'Akwa, Douala',terms:'Paiement à réception',payment:'Espèces',discount:0,tvaRate:18,deposit:0,currency:'FCFA',lines:[{desc:'Design identité visuelle',qty:1,price:200000}],bank:'',iban:'',momo:'',bic:'',notes:'Merci pour votre confiance.',legal:'',status:'paid'},
+  {id:'004',clientName:'Agence Alpha',issue:'2026-08-20',due:'2026-09-10',delivery:'',type:'Devis',ref:'SEO-2026',subject:'Formation SEO',contact:'Sophie Kamga',billAddr:'Avenue Kennedy, Yaoundé',terms:'Net 15 jours',payment:'Chèque',discount:0,tvaRate:18,deposit:0,currency:'FCFA',lines:[{desc:'Formation SEO',qty:5,price:40000}],bank:'',iban:'',momo:'',bic:'',notes:'',legal:'',status:'paid'},
+  {id:'005',clientName:'Cabinet Ndjama',issue:'2026-09-10',due:'2026-10-10',delivery:'',type:'Facture',ref:'LEGAL-2026-02',subject:'Consultation + Rédaction contrats',contact:'Me. Charles Ndjama',billAddr:'Bastos, Yaoundé',terms:'Net 30 jours',payment:'Virement bancaire',discount:10,tvaRate:19.25,deposit:0,currency:'FCFA',lines:[{desc:'Consultation juridique',qty:8,price:50000},{desc:'Rédaction contrat',qty:2,price:120000}],bank:'UBA Cameroun',iban:'CM21 4567 0001 5678',momo:'',bic:'UNAFCMCX',notes:'Brouillon.',legal:'N° Contribuable : M987654321B',status:'draft'},
+];
+let localInvs=[...INV_DATA];
+let curFilter='all',curSearch='',editIdx=null,detailIdx=0,lineCount=0;
+let settings={accentColor:'#E85D2F',logoSrc:null,companyName:'FacturePro',adminName:'Jean Mbeki'};
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+const fmt=(n,cur='FCFA')=>{const sym={FCFA:'FCFA',EUR:'€',USD:'$'};return Math.round(n).toLocaleString('fr-FR')+' '+(sym[cur]||cur);};
+function fdate(d){if(!d)return'—';const[y,m,da]=d.split('-');const mn=['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];return`${parseInt(da)} ${mn[parseInt(m)-1]} ${y}`;}
+function sbadge(s){const m={draft:'<span class="badge badge-gray"><span class="badge-dot"></span>Brouillon</span>',sent:'<span class="badge badge-amber"><span class="badge-dot"></span>Envoyée</span>',paid:'<span class="badge badge-green"><span class="badge-dot"></span>Payée</span>',overdue:'<span class="badge badge-red"><span class="badge-dot"></span>En retard</span>'};return m[s]||'';}
+function calcInv(lines,discount=0,tvaRate=18,deposit=0){const sub=lines.reduce((a,l)=>a+Math.round((parseFloat(l.qty)||0)*(parseFloat(l.price)||0)),0);const discAmt=Math.round(sub*discount/100);const base=sub-discAmt;const tva=Math.round(base*tvaRate/100);const total=base+tva;const remain=Math.max(0,total-deposit);return{sub,discAmt,base,tva,total,remain};}
+function g(id){return document.getElementById(id);}
+
+// ─── SIDEBAR MOBILE ───────────────────────────────────────────────────────────
+function openSidebar(){
+  g('sidebar').classList.add('open');
+  g('sidebarOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSidebar(){
+  g('sidebar').classList.remove('open');
+  g('sidebarOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function nav(page){
+  // Close sidebar on mobile after navigation
+  closeSidebar();
+  document.querySelectorAll('.page,.inv-split').forEach(p=>{p.classList.remove('active');p.style.display='none';});
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.mobile-nav-item').forEach(n=>n.classList.remove('active'));
+  const titles={dashboard:'Tableau de bord',invoices:'Factures',clients:'Clients',settings:'Paramètres','invoice-create':'Nouvelle facture','invoice-detail':'Détail facture'};
+  g('pageTitle').textContent=titles[page]||page;
+  const el=g('page-'+page);if(!el)return;
+  if(page==='invoice-create'){el.style.display='grid';el.classList.add('active');if(editIdx===null)initForm();}
+  else{el.style.display='block';el.classList.add('active');}
+  // Sidebar active
+  document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+page+"'"))n.classList.add('active');});
+  // Mobile nav active
+  const mniMap={dashboard:'mni-dashboard',invoices:'mni-invoices','invoice-create':'mni-new',clients:'mni-clients',settings:'mni-settings'};
+  const mni=g(mniMap[page]);if(mni)mni.classList.add('active');
+  if(page==='invoices')renderInvTable();
+  if(page==='clients')renderClients();
+  window.scrollTo(0,0);
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function showToast(msg,d=2800){const t=g('toast');t.textContent=msg;t.style.display='flex';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',d);}
+
+// ─── INVOICE LIST ─────────────────────────────────────────────────────────────
+function renderInvTable(){
+  const rows=localInvs.filter(inv=>{
+    const mf=curFilter==='all'||inv.status===curFilter;
+    const ms=curSearch===''||(inv.clientName||'').toLowerCase().includes(curSearch.toLowerCase());
+    return mf&&ms;
+  });
+  // Desktop table
+  const tb=g('invTbody');
+  if(!rows.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-3)">Aucune facture trouvée</td></tr>';}
+  else{tb.innerHTML=rows.map(inv=>{const cname=inv.clientName||'—';const{total}=calcInv(inv.lines,inv.discount,inv.tvaRate,inv.deposit);const i=localInvs.indexOf(inv);return`<tr onclick="openDetail(${i})"><td><strong>#${inv.id}</strong></td><td>${cname}</td><td class="muted">${fdate(inv.issue)}</td><td class="muted">${fdate(inv.due)}</td><td><strong>${fmt(total,inv.currency)}</strong></td><td>${sbadge(inv.status)}</td><td><button class="btn btn-ghost btn-icon" onclick="event.stopPropagation();openDetail(${i})" style="font-size:14px">👁</button></td></tr>`;}).join('');}
+  // Mobile cards
+  const cl=g('invCardList');
+  if(!rows.length){cl.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-3)">Aucune facture trouvée</div>';}
+  else{cl.innerHTML=rows.map(inv=>{const cname2=inv.clientName||'—';const{total}=calcInv(inv.lines,inv.discount,inv.tvaRate,inv.deposit);const i=localInvs.indexOf(inv);return`<div class="inv-card" onclick="openDetail(${i})"><div class="inv-card-top"><span class="inv-card-num">${inv.type||'Fact.'} #${inv.id}</span>${sbadge(inv.status)}</div><div style="font-size:13.5px;font-weight:500;color:var(--text);margin:4px 0">${cname2}</div><div class="inv-card-dates">Émis ${fdate(inv.issue)} · Éch. ${fdate(inv.due)}</div><div class="inv-card-bottom"><span class="inv-card-amount">${fmt(total,inv.currency)}</span><span style="font-size:12px;color:var(--text-3)">${inv.payment||''}</span></div></div>`;}).join('');}
+}
+function filterInv(f,btn){curFilter=f;document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));if(btn)btn.classList.add('active');renderInvTable();}
+function searchInv(v){curSearch=v;renderInvTable();}
+
+// ─── INVOICE FORM ─────────────────────────────────────────────────────────────
+function initForm(inv=null){
+  editIdx=inv?localInvs.indexOf(inv):null;
+  g('formTitle').textContent=inv?'Modifier la facture':'Nouvelle facture';
+  const today=new Date().toISOString().split('T')[0];
+  const due30=new Date(Date.now()+30*864e5).toISOString().split('T')[0];
+  g('fc-num').value=inv?'#'+inv.id:'#00'+(localInvs.length+1);
+  g('fc-ref').value=inv?inv.ref:'';g('fc-type').value=inv?inv.type:'Facture';
+  g('fc-client').value=inv?(inv.clientName||''):'';g('fc-contact').value=inv?inv.contact:'';
+  g('fc-bill-addr').value=inv?inv.billAddr:'';
+  g('fc-issue').value=inv?inv.issue:today;g('fc-due').value=inv?inv.due:due30;
+  g('fc-delivery').value=inv?inv.delivery:'';g('fc-terms').value=inv?inv.terms:'Net 30 jours';
+  g('fc-payment').value=inv?inv.payment:'Virement bancaire';g('fc-currency').value=inv?inv.currency:'FCFA';
+  g('fc-discount').value=inv?inv.discount:0;g('fc-tva-rate').value=inv?inv.tvaRate:18;g('fc-deposit').value=inv?inv.deposit:0;
+  g('fc-bank').value=inv?inv.bank:'';g('fc-iban').value=inv?inv.iban:'';g('fc-momo').value=inv?inv.momo:'';g('fc-bic').value=inv?inv.bic:'';
+  g('fc-subject').value=inv?inv.subject:'';g('fc-notes').value=inv?inv.notes:'';g('fc-legal').value=inv?inv.legal:'';
+  lineCount=0;g('lineItems').innerHTML='';
+  (inv?inv.lines:[{desc:'',qty:1,price:0}]).forEach(l=>addLine(l));rp();
+}
+function addLine(data=null){
+  const id=lineCount++;const d=data||{desc:'',qty:1,price:0};
+  const wrap=g('lineItems');const div=document.createElement('div');div.className='li-row';div.id='li-'+id;
+  div.innerHTML=`<input type="text" class="form-control" value="${d.desc}" placeholder="Prestation…" oninput="rp()"><input type="number" class="form-control" value="${d.qty}" min="1" oninput="upLine(${id});rp()"><input type="number" class="form-control" value="${d.price}" min="0" oninput="upLine(${id});rp()"><div class="li-total" id="lt-${id}">${fmt(Math.round((d.qty||0)*(d.price||0)))}</div><button class="btn-rm" onclick="rmLine(${id})">✕</button>`;
+  wrap.appendChild(div);upTotals();
+}
+function rmLine(id){const e=g('li-'+id);if(e)e.remove();upTotals();rp();}
+function upLine(id){const e=g('li-'+id);if(!e)return;const inp=e.querySelectorAll('input');g('lt-'+id).textContent=fmt(Math.round((parseFloat(inp[1].value)||0)*(parseFloat(inp[2].value)||0)));upTotals();}
+function getLines(){return[...document.querySelectorAll('.li-row')].map(e=>{const i=e.querySelectorAll('input');return{desc:i[0].value,qty:parseFloat(i[1].value)||0,price:parseFloat(i[2].value)||0};});}
+function upTotals(){
+  const lines=getLines();const disc=parseFloat(g('fc-discount').value)||0;const tvaR=parseFloat(g('fc-tva-rate').value)||0;const dep=parseFloat(g('fc-deposit').value)||0;const cur=g('fc-currency').value;
+  const{sub,discAmt,base,tva,total,remain}=calcInv(lines,disc,tvaR,dep);
+  g('fc-sub').textContent=fmt(sub,cur);g('fc-tva-pct').textContent=tvaR;g('fc-tva-amt').textContent=fmt(tva,cur);g('fc-total').textContent=fmt(total,cur);
+  if(disc>0){g('fc-disc-row').style.display='flex';g('fc-disc-pct').textContent=disc;g('fc-disc-amt').textContent='− '+fmt(discAmt,cur);}else g('fc-disc-row').style.display='none';
+  if(dep>0){g('fc-dep-row').style.display='flex';g('fc-remain-row').style.display='flex';g('fc-dep-amt').textContent='− '+fmt(dep,cur);g('fc-remain').textContent=fmt(remain,cur);}else{g('fc-dep-row').style.display='none';g('fc-remain-row').style.display='none';}
+}
+function rp(){
+  upTotals();
+  const ci=parseInt(g('fc-client').value);const num=g('fc-num').value;const type=g('fc-type').value;const ref=g('fc-ref').value;
+  const issue=g('fc-issue').value;const due=g('fc-due').value;
+  const lines=getLines();const disc=parseFloat(g('fc-discount').value)||0;const tvaR=parseFloat(g('fc-tva-rate').value)||0;const dep=parseFloat(g('fc-deposit').value)||0;const cur=g('fc-currency').value;
+  const{sub,discAmt,tva,total,remain}=calcInv(lines,disc,tvaR,dep);
+  const bank=g('fc-bank').value;const iban=g('fc-iban').value;const momo=g('fc-momo').value;const bic=g('fc-bic').value;const notes=g('fc-notes').value;const legal=g('fc-legal').value;const payment=g('fc-payment').value;const terms=g('fc-terms').value;
+  g('prev-doctype').innerHTML=type+' <span id="prev-num">'+num+'</span>';
+  g('prev-issue').textContent=fdate(issue);g('prev-due').textContent=fdate(due);
+  if(ref){g('prev-ref-line').style.display='block';g('prev-ref').textContent=ref;}else g('prev-ref-line').style.display='none';
+  const clientNameVal=g('fc-client').value.trim();
+  const matchedC=localClients.find(c=>c.name.toLowerCase()===clientNameVal.toLowerCase());
+  if(clientNameVal){
+    g('prev-to-name').textContent=clientNameVal;
+    if(matchedC){g('prev-to-detail').innerHTML=matchedC.company+'<br>'+matchedC.email+'<br>'+matchedC.phone;}
+    else{g('prev-to-detail').textContent='';}
+  }else{g('prev-to-name').textContent='—';g('prev-to-detail').textContent='Saisir un client';}
+  const tb=g('prev-lines');
+  if(!lines.length||lines.every(l=>!l.desc)){tb.innerHTML='<tr><td colspan="4" style="color:var(--text-3);text-align:center;padding:14px;font-size:12px">Aucune ligne</td></tr>';}
+  else{tb.innerHTML=lines.filter(l=>l.desc||l.price).map(l=>`<tr><td>${l.desc||'—'}</td><td>${l.qty}</td><td class="r">${Math.round(l.price).toLocaleString('fr-FR')}</td><td class="r">${Math.round((l.qty||0)*(l.price||0)).toLocaleString('fr-FR')}</td></tr>`).join('');}
+  g('psub').textContent=fmt(sub,cur);g('ptva-pct').textContent=tvaR;g('ptva').textContent=fmt(tva,cur);g('ptotal').textContent=fmt(total,cur);
+  if(disc>0){g('pdisc-row').style.display='flex';g('pdisc').textContent='− '+fmt(discAmt,cur);}else g('pdisc-row').style.display='none';
+  if(dep>0){g('pdep-row').style.display='flex';g('pdep').textContent='− '+fmt(dep,cur);}else g('pdep-row').style.display='none';
+  const bankParts=[];if(bank)bankParts.push('Banque : '+bank);if(iban)bankParts.push('IBAN : '+iban);if(bic)bankParts.push('BIC : '+bic);if(momo)bankParts.push('Mobile Money : '+momo);
+  if(bankParts.length){g('prev-bank-section').style.display='block';g('prev-bank-detail').innerHTML=bankParts.join('<br>');}else g('prev-bank-section').style.display='none';
+  const noteStr=(notes?'<b>Notes :</b> '+notes:'')+(notes&&legal?'<br>':'')+(legal?'<b>Légal :</b> '+legal:'');
+  if(noteStr){g('prev-notes-section').style.display='block';g('prev-notes-content').innerHTML=noteStr;}else g('prev-notes-section').style.display='none';
+}
+function saveInv(status){
+  const clientNameSave=g('fc-client').value.trim();
+  if(!clientNameSave){showToast('⚠ Saisissez un nom de client');return;}
+  // Auto-add to localClients if new name
+  const existsAlready=localClients.find(c=>c.name.toLowerCase()===clientNameSave.toLowerCase());
+  if(!existsAlready){
+    const ini=clientNameSave.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const cols=['#dbeafe|#1e40af','#d1fae5|#065f46','#fef3c7|#92400e','#ede9fe|#5b21b6','#fce7f3|#9d174d'];
+    const rc=cols[localClients.length%cols.length].split('|');
+    localClients.push({name:clientNameSave,company:clientNameSave,email:'',phone:'',address:'',color:rc[0],tc:rc[1],initials:ini,invoices:0,total:'0'});
+  }
+  const lines=getLines().filter(l=>l.desc);if(!lines.length){showToast('⚠ Ajoutez au moins une ligne');return;}
+  const inv={id:g('fc-num').value.replace('#','').padStart(3,'0'),clientName:clientNameSave,issue:g('fc-issue').value,due:g('fc-due').value,delivery:g('fc-delivery').value,type:g('fc-type').value,ref:g('fc-ref').value,subject:g('fc-subject').value,contact:g('fc-contact').value,billAddr:g('fc-bill-addr').value,terms:g('fc-terms').value,payment:g('fc-payment').value,discount:parseFloat(g('fc-discount').value)||0,tvaRate:parseFloat(g('fc-tva-rate').value)||18,deposit:parseFloat(g('fc-deposit').value)||0,currency:g('fc-currency').value,lines,bank:g('fc-bank').value,iban:g('fc-iban').value,momo:g('fc-momo').value,bic:g('fc-bic').value,notes:g('fc-notes').value,legal:g('fc-legal').value,status};
+  if(editIdx!==null){localInvs[editIdx]=inv;showToast('✓ Facture mise à jour');}else{localInvs.unshift(inv);showToast(status==='draft'?'💾 Brouillon sauvegardé':'✓ Facture envoyée');}
+  editIdx=null;nav('invoices');
+}
+
+// ─── SEND MODAL ───────────────────────────────────────────────────────────────
+function openSendModal(){
+  const cname=g('fc-client').value.trim();
+  if(!cname){showToast('⚠ Saisissez un nom de client');return;}
+  const mc=localClients.find(c=>c.name.toLowerCase()===cname.toLowerCase())||{name:cname,company:cname,email:'',phone:''};
+  _showSend(mc,g('fc-num').value,'form');
+}
+function openSendModalDetail(){const inv=localInvs[detailIdx];const sc=localClients.find(cl=>cl.name.toLowerCase()===(inv.clientName||'').toLowerCase())||{name:inv.clientName||'—',company:'',email:''};_showSend(sc,'#'+inv.id,'detail');}
+function _showSend(c,num,origin){
+  openModal('Envoyer la facture',`
+    <div class="send-field"><div class="sf-label">Destinataire</div><div class="sf-value">${c.name} — ${c.email}</div></div>
+    <div class="send-field"><div class="sf-label">Document</div><div class="sf-value">${num}</div></div>
+    <div class="form-group"><label class="form-label">Objet</label><input class="form-control" id="send-subj" value="Facture ${num} — ${c.company}"></div>
+    <div class="form-group"><label class="form-label">Message</label><textarea class="form-control" id="send-msg" rows="4">Bonjour,\n\nVeuillez trouver ci-joint la facture ${num}.\n\nMerci de procéder au règlement dans les délais convenus.\n\nCordialement,\n${settings.adminName}</textarea></div>
+    <div class="form-group"><label class="form-label">Copie (CC)</label><input class="form-control" id="send-cc" placeholder="email@exemple.cm"></div>
+  `,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="confirmSend('${origin}','${c.email}','${num}')">✉ Envoyer</button>`);
+}
+function confirmSend(origin,email,num){closeModal();if(origin==='form'){saveInv('sent');}else{localInvs[detailIdx].status='sent';openDetail(detailIdx);}setTimeout(()=>showToast('✉ Envoyé à '+email),400);}
+
+// ─── INVOICE DETAIL ───────────────────────────────────────────────────────────
+function openDetail(idx){
+  detailIdx=idx;const inv=localInvs[idx];
+  const c=localClients.find(cl=>cl.name.toLowerCase()===(inv.clientName||'').toLowerCase())||{name:inv.clientName||'—',company:'',email:'',phone:'',address:'',color:'#F3F4F6',tc:'#374151',initials:(inv.clientName||'?').slice(0,2).toUpperCase()};
+  const{sub,discAmt,tva,total,remain}=calcInv(inv.lines,inv.discount,inv.tvaRate,inv.deposit);
+  g('pageTitle').textContent=(inv.type||'Facture')+' #'+inv.id;
+  g('detailTitle').textContent=(inv.type||'Facture')+' #'+inv.id;
+  g('detailBadge').innerHTML=sbadge(inv.status);
+  const bankLines=[];if(inv.bank)bankLines.push('Banque : '+inv.bank);if(inv.iban)bankLines.push('IBAN : '+inv.iban);if(inv.bic)bankLines.push('BIC : '+inv.bic);if(inv.momo)bankLines.push('Mobile Money : '+inv.momo);
+  g('detailPreview').innerHTML=`
+    <div class="prev-logo-area" style="margin-bottom:20px"><div class="prev-logo">FACT<br>PRO</div><div style="text-align:right"><div class="prev-invoice-title">${inv.type||'Facture'} #${inv.id}</div><div class="prev-meta">Émis <b>${fdate(inv.issue)}</b></div><div class="prev-meta">Éch. <b>${fdate(inv.due)}</b></div>${inv.ref?`<div class="prev-meta">Réf : <b>${inv.ref}</b></div>`:''}</div></div>
+    <div class="prev-parties"><div><div class="prev-party-lbl">De</div><div class="prev-party-name">FacturePro</div><div class="prev-party-detail">Jean Mbeki<br>Yaoundé, Cameroun</div></div><div><div class="prev-party-lbl">À</div><div class="prev-party-name">${c.name}</div><div class="prev-party-detail">${c.company}<br>${c.address}<br>${c.email}${inv.contact?'<br>'+inv.contact:''}</div></div></div>
+    <table class="prev-tbl"><thead><tr><th>Description</th><th>Qté</th><th class="r">P.U.</th><th class="r">Total</th></tr></thead><tbody>${inv.lines.map(l=>`<tr><td>${l.desc}</td><td>${l.qty}</td><td class="r">${Math.round(l.price).toLocaleString('fr-FR')}</td><td class="r">${Math.round((l.qty||0)*(l.price||0)).toLocaleString('fr-FR')}</td></tr>`).join('')}</tbody></table>
+    <div class="prev-totals"><div class="prev-tot-row"><span class="pl">Sous-total HT</span><span class="pr">${fmt(sub,inv.currency)}</span></div>${inv.discount>0?`<div class="prev-tot-row"><span class="pl">Remise (${inv.discount}%)</span><span class="pr">− ${fmt(discAmt,inv.currency)}</span></div>`:''}<div class="prev-tot-row"><span class="pl">TVA (${inv.tvaRate}%)</span><span class="pr">${fmt(tva,inv.currency)}</span></div>${inv.deposit>0?`<div class="prev-tot-row"><span class="pl">Acompte</span><span class="pr">− ${fmt(inv.deposit,inv.currency)}</span></div>`:''}<div class="prev-tot-row grand"><span class="pl">Total TTC</span><span class="pr">${fmt(total,inv.currency)}</span></div>${inv.deposit>0?`<div class="prev-tot-row" style="color:var(--accent)"><span class="pl" style="color:var(--accent)">Reste à payer</span><span class="pr" style="color:var(--accent);font-weight:700">${fmt(remain,inv.currency)}</span></div>`:''}</div>
+    ${bankLines.length?`<div class="prev-notes"><b>Paiement :</b> ${inv.payment} — ${inv.terms}<br>${bankLines.join('<br>')}</div>`:''}
+    ${inv.notes?`<div class="prev-notes"><b>Notes :</b> ${inv.notes}</div>`:''}
+    ${inv.legal?`<div class="prev-notes"><b>Légal :</b> ${inv.legal}</div>`:''}
+    ${inv.status==='paid'?'<div style="text-align:right"><div class="prev-stamp paid">Payée</div></div>':''}
+    ${inv.status==='overdue'?'<div style="text-align:right"><div class="prev-stamp overdue">En retard</div></div>':''}
+  `;
+  const te=[{icon:'◎',label:'Facture créée',date:fdate(inv.issue),active:true}];
+  if(inv.status!=='draft')te.push({icon:'✉',label:'Envoyée',date:fdate(inv.issue),active:true});
+  if(inv.status==='paid')te.push({icon:'✓',label:'Paiement reçu',date:fdate(inv.due),active:true});
+  if(inv.status==='overdue')te.push({icon:'⚠',label:'En retard',date:fdate(inv.due),active:false});
+  g('detailTimeline').innerHTML=te.map(e=>`<li><div class="tl-dot${e.active?' active':''}"><span style="font-size:10px">${e.icon}</span></div><div><div class="tl-evt">${e.label}</div><div class="tl-date">${e.date}</div></div></li>`).join('');
+  g('detailClientInfo').innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div class="avatar" style="background:${c.color||'#F3F4F6'};color:${c.tc||'#374151'};width:36px;height:36px">${c.initials||(inv.clientName||'?').slice(0,2).toUpperCase()}</div><div><div style="font-size:14px;font-weight:500">${c.name}</div><div style="font-size:12px;color:var(--text-3)">${c.company}</div></div></div><div class="cl-detail"><span class="cl-icon">✉</span>${c.email}</div><div class="cl-detail"><span class="cl-icon">☏</span>${c.phone}</div><div class="cl-detail"><span class="cl-icon">📍</span>${c.address}</div><div style="margin-top:12px"><button class="btn btn-ghost btn-sm" onclick="nav('clients')" style="width:100%">Voir tous les clients →</button></div>`;
+  // Navigate without closing sidebar (already closed)
+  document.querySelectorAll('.page,.inv-split').forEach(p=>{p.classList.remove('active');p.style.display='none';});
+  g('pageTitle').textContent=(inv.type||'Facture')+' #'+inv.id;
+  g('page-invoice-detail').style.display='block';g('page-invoice-detail').classList.add('active');
+  window.scrollTo(0,0);
+}
+function editInv(){const inv=localInvs[detailIdx];editIdx=detailIdx;nav('invoice-create');initForm(inv);}
+function changeStatus(){
+  const inv=localInvs[detailIdx];const labels={draft:'Brouillon',sent:'Envoyée',paid:'Payée',overdue:'En retard'};
+  openModal('Changer le statut',`<p style="margin-bottom:12px;font-size:13px;color:var(--text-2)">Statut actuel : ${sbadge(inv.status)}</p><div style="display:flex;flex-direction:column;gap:8px">${['draft','sent','paid','overdue'].filter(s=>s!==inv.status).map(s=>`<button class="btn btn-secondary" style="justify-content:flex-start" onclick="applyStatus('${s}')">${sbadge(s)} <span style="margin-left:8px">${labels[s]}</span></button>`).join('')}</div>`,'',false);
+}
+function applyStatus(s){localInvs[detailIdx].status=s;closeModal();openDetail(detailIdx);showToast('✓ Statut : '+{draft:'Brouillon',sent:'Envoyée',paid:'Payée',overdue:'En retard'}[s]);}
+function deleteInv(){openModal('Supprimer',`<div class="confirm-box">⚠ La facture <strong>#${localInvs[detailIdx].id}</strong> sera supprimée définitivement.</div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="confirmDelInv()">Supprimer</button>`);}
+function confirmDelInv(){localInvs.splice(detailIdx,1);closeModal();nav('invoices');showToast('✓ Facture supprimée');}
+
+// ─── CLIENTS ──────────────────────────────────────────────────────────────────
+function renderClients(filter=''){
+  const grid=g('clientsGrid');const cls=localClients.filter(c=>!filter||c.name.toLowerCase().includes(filter.toLowerCase())||c.company.toLowerCase().includes(filter.toLowerCase()));
+  if(!cls.length){grid.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-3)">Aucun client trouvé</div>';return;}
+  grid.innerHTML=cls.map((c,i)=>`<div class="client-card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div class="avatar" style="background:${c.color};color:${c.tc};width:40px;height:40px;font-size:14px">${c.initials}</div><div><div style="font-size:14px;font-weight:600">${c.name}</div><div style="font-size:12px;color:var(--text-3)">${c.company}</div></div></div><div class="cl-detail"><span class="cl-icon">✉</span>${c.email}</div><div class="cl-detail"><span class="cl-icon">☏</span>${c.phone}</div><div class="cl-detail"><span class="cl-icon">📍</span>${c.address}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0"><div class="cl-stat"><div class="cl-stat-lbl">Factures</div><div class="cl-stat-val">${c.invoices}</div></div><div class="cl-stat"><div class="cl-stat-lbl">Total</div><div class="cl-stat-val" style="font-size:11px">${c.total} FCFA</div></div></div><div style="display:flex;gap:8px"><button class="btn btn-secondary btn-sm" style="flex:1" onclick="openClientModal(${i})">✏ Modifier</button><button class="btn btn-danger btn-sm" style="flex:1" onclick="delClient(${i})">✕ Supprimer</button></div></div>`).join('');
+}
+function searchCl(v){renderClients(v);}
+function openClientModal(idx=null){
+  const c=idx!==null?localClients[idx]:null;const rc=['#dbeafe|#1e40af','#fce7f3|#9d174d','#d1fae5|#065f46','#fef3c7|#92400e','#ede9fe|#5b21b6'][Math.floor(Math.random()*5)].split('|');
+  openModal(c?'Modifier le client':'Nouveau client',`<div class="form-row"><div class="form-group"><label class="form-label">Nom *</label><input class="form-control" id="cl-name" value="${c?c.name:''}"></div><div class="form-group"><label class="form-label">Entreprise</label><input class="form-control" id="cl-company" value="${c?c.company:''}"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Email *</label><input type="email" class="form-control" id="cl-email" value="${c?c.email:''}"></div><div class="form-group"><label class="form-label">Téléphone</label><input type="tel" class="form-control" id="cl-phone" value="${c?c.phone:''}"></div></div><div class="form-group"><label class="form-label">Adresse</label><input class="form-control" id="cl-addr" value="${c?c.address:''}"></div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveClient(${idx},'${rc[0]}','${rc[1]}')">${c?'Enregistrer':'Créer'}</button>`);
+}
+function saveClient(idx,col,tc){
+  const name=g('cl-name').value.trim(),email=g('cl-email').value.trim();
+  if(!name){showToast('⚠ Nom requis');return;}if(!email){showToast('⚠ Email requis');return;}
+  const initials=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  const cl={name,initials,company:g('cl-company').value||name,email,phone:g('cl-phone').value,address:g('cl-addr').value,color:idx!==null?localClients[idx].color:col,tc:idx!==null?localClients[idx].tc:tc,invoices:idx!==null?localClients[idx].invoices:0,total:idx!==null?localClients[idx].total:'0'};
+  if(idx!==null)localClients[idx]=cl;else localClients.push(cl);
+  closeModal();renderClients();
+  // client field is free-text, no update needed
+  showToast(idx!==null?'✓ Client mis à jour':'✓ Client créé');
+}
+function delClient(idx){openModal('Supprimer',`<div class="confirm-box">⚠ Supprimer <strong>${localClients[idx].name}</strong> ?</div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="confirmDelCl(${idx})">Supprimer</button>`);}
+function confirmDelCl(idx){localClients.splice(idx,1);closeModal();renderClients();showToast('✓ Client supprimé');}
+
+// ─── SETTINGS ─────────────────────────────────────────────────────────────────
+function openSettingsTab(tab,btn){
+  document.querySelectorAll('.settings-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.settings-nav-item').forEach(b=>b.classList.remove('active'));
+  g('st-'+tab).classList.add('active');if(btn)btn.classList.add('active');
+}
+function saveProfile(){settings.companyName=g('st-company').value||'FacturePro';settings.adminName=g('st-admin').value||'Jean Mbeki';liveUpdateSidebar();showToast('✓ Profil enregistré');}
+function liveUpdateSidebar(){const name=g('st-company')?.value||settings.companyName;const admin=g('st-admin')?.value||settings.adminName;const el=g('sb-company-name');if(el)el.textContent=name;const eu=g('sb-username');if(eu)eu.textContent=admin;const av=g('sb-avatar');if(av)av.textContent=admin.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+function handleLogoUpload(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{settings.logoSrc=e.target.result;const box=g('logo-preview-box');box.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;showToast('✓ Logo chargé');};reader.readAsDataURL(file);}
+function pickColor(color,el){document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));el.classList.add('active');settings.accentColor=color;document.documentElement.style.setProperty('--accent',color);const lm=g('sb-logo-mark');if(lm)lm.style.background=color;showToast('🎨 Couleur appliquée');}
+function toggleSwitch(el){el.classList.toggle('on');}
+
+
+// ─── AUTOCOMPLETE CLIENT ──────────────────────────────────────────────────────
+let _suggTimeout=null;
+function onClientInput(val){
+  clearTimeout(_suggTimeout);
+  _suggTimeout=setTimeout(()=>showClientSugg(val),120);
+  rp();
+}
+function showClientSugg(val){
+  const box=g('client-sugg');if(!box)return;
+  const q=val.trim().toLowerCase();
+  // Collect all unique client names from localClients + localInvs
+  const allNames=new Map();
+  localClients.forEach(c=>allNames.set(c.name,c));
+  localInvs.forEach(inv=>{if(inv.clientName&&!allNames.has(inv.clientName))allNames.set(inv.clientName,null);});
+  
+  const filtered=q===''
+    ?[...allNames.entries()].slice(0,6)
+    :[...allNames.entries()].filter(([name])=>name.toLowerCase().includes(q));
+  
+  if(!filtered.length&&q===''){box.style.display='none';return;}
+  
+  let html='';
+  filtered.slice(0,8).forEach(([name,client])=>{
+    const initials=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const col=client?client.color:'#F3F4F6';const tc=client?client.tc:'#374151';
+    const company=client?client.company:'';
+    html+=`<div class="client-sugg-item" onmousedown="pickClient('${name.replace(/'/g,"\\'")}')">
+      <div class="client-sugg-avatar" style="background:${col};color:${tc}">${initials}</div>
+      <div><div class="sugg-name">${name}</div>${company?`<div class="sugg-company">${company}</div>`:''}</div>
+    </div>`;
+  });
+  
+  // Option to add as new client if not exact match
+  const exactMatch=[...allNames.keys()].some(n=>n.toLowerCase()===q);
+  if(q&&!exactMatch){
+    html+=`<div class="client-sugg-new" onmousedown="pickClient('${val.trim().replace(/'/g,"\\'")}')">
+      <span style="font-size:16px">＋</span> Utiliser "<strong>${val.trim()}</strong>"
+    </div>`;
+  }
+  
+  box.innerHTML=html;
+  box.style.display=filtered.length||(!exactMatch&&q)?'block':'none';
+}
+function pickClient(name){
+  const el=g('fc-client');if(el)el.value=name;
+  const box=g('client-sugg');if(box)box.style.display='none';
+  // Auto-fill address if known client
+  const mc=localClients.find(c=>c.name.toLowerCase()===name.toLowerCase());
+  if(mc){
+    const addr=g('fc-bill-addr');if(addr&&!addr.value)addr.value=mc.address||'';
+  }
+  rp();
+}
+function hideClientSugg(){
+  setTimeout(()=>{const box=g('client-sugg');if(box)box.style.display='none';},200);
+}
+function showAllSugg(){
+  const el=g('fc-client');if(el)showClientSugg(el.value);
+}
+
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+function openModal(title,body,footer=''){g('modalTitle').textContent=title;g('modalBody').innerHTML=body;g('modalFooter').innerHTML=footer;g('modalFooter').style.display=footer?'flex':'none';g('modalOverlay').style.display='flex';}
+function closeModal(e){if(e&&e.target!==g('modalOverlay'))return;g('modalOverlay').style.display='none';}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+nav('dashboard');
+</script>
+</body>
+</html>
