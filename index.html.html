@@ -259,6 +259,17 @@ select.form-control{cursor:pointer}
 .mobile-nav-badge{position:absolute;top:-2px;right:-4px;background:var(--accent);color:#fff;font-size:9px;font-weight:600;padding:1px 4px;border-radius:10px}
 .mobile-nav-icon-wrap{position:relative}
 
+
+/* ── AUTOCOMPLETE CLIENT ── */
+.client-sugg-item{padding:10px 14px;cursor:pointer;font-size:13.5px;color:var(--text);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);transition:background .1s}
+.client-sugg-item:last-child{border-bottom:none}
+.client-sugg-item:hover,.client-sugg-item.focused{background:var(--accent-bg);color:var(--accent-text)}
+.client-sugg-item .sugg-name{font-weight:500}
+.client-sugg-item .sugg-company{font-size:12px;color:var(--text-3);margin-top:1px}
+.client-sugg-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.client-sugg-new{padding:10px 14px;cursor:pointer;font-size:13px;color:var(--accent);display:flex;align-items:center;gap:8px;font-weight:500}
+.client-sugg-new:hover{background:var(--accent-bg)}
+
 /* ── CONFIRM ── */
 .confirm-box{background:var(--red-bg);border:1px solid #FECACA;border-radius:var(--r);padding:13px 15px;margin-bottom:14px;font-size:13.5px;color:var(--red-text)}
 
@@ -463,10 +474,11 @@ select.form-control{cursor:pointer}
         <div class="section-divider">2 — Client</div>
         <div class="form-row" style="margin-bottom:12px">
           <div class="form-group" style="margin-bottom:0"><label class="form-label">Client *</label>
-            <select class="form-control" id="fc-client" onchange="rp()">
-              <option value="">Sélectionner…</option>
-              <option value="0">Agence Alpha</option><option value="1">Tech Innov SARL</option><option value="2">Maison Ekié</option><option value="3">Cabinet Ndjama</option><option value="4">Startup Bamenda</option>
-            </select>
+            <div style="position:relative">
+              <input type="text" class="form-control" id="fc-client" placeholder="Saisir ou chercher un client…" oninput="onClientInput(this.value)" onblur="hideClientSugg()" onfocus="showAllSugg()" autocomplete="off" style="padding-right:32px">
+              <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:12px;cursor:pointer" onclick="g('fc-client').focus();showAllSugg()">▾</span>
+              <div id="client-sugg" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border-strong);border-top:none;border-radius:0 0 var(--r) var(--r);z-index:150;max-height:200px;overflow-y:auto;box-shadow:0 8px 20px rgba(0,0,0,.12)"></div>
+            </div>
           </div>
           <div class="form-group" style="margin-bottom:0"><label class="form-label">Contact</label><input class="form-control" id="fc-contact" placeholder="Nom du contact" oninput="rp()"></div>
         </div>
@@ -772,11 +784,11 @@ const CLIENTS=[
 ];
 let localClients=[...CLIENTS];
 const INV_DATA=[
-  {id:'001',client:0,issue:'2026-09-12',due:'2026-09-30',delivery:'',type:'Facture',ref:'PROJ-2026-01',subject:'Création site web + maintenance',contact:'Sophie Kamga',billAddr:'Avenue Kennedy, Yaoundé',terms:'Net 30 jours',payment:'Virement bancaire',discount:0,tvaRate:18,deposit:0,currency:'FCFA',lines:[{desc:'Création site web',qty:1,price:350000},{desc:'Maintenance mensuelle',qty:3,price:80000}],bank:'Afriland First Bank',iban:'CM21 3001 4000 1234',momo:'+237 691 234 567',bic:'AFBACMCX',notes:'Paiement à 30 jours.',legal:'RCCM : RC/YAO/2022/A/1234',status:'sent'},
-  {id:'002',client:1,issue:'2026-09-08',due:'2026-09-22',delivery:'',type:'Facture',ref:'DEV-MOB-2026',subject:'Application mobile',contact:'Paul Biya Jr.',billAddr:'Rue Joseph Mballa, Yaoundé',terms:"50% d'avance",payment:'Mobile Money',discount:5,tvaRate:18,deposit:500000,currency:'FCFA',lines:[{desc:'Développement application mobile',qty:1,price:1000000}],bank:'',iban:'',momo:'+237 677 890 123',bic:'',notes:'',legal:'',status:'overdue'},
-  {id:'003',client:2,issue:'2026-09-05',due:'2026-09-25',delivery:'2026-09-10',type:'Facture',ref:'DESIGN-2026-03',subject:'Identité visuelle',contact:'',billAddr:'Akwa, Douala',terms:'Paiement à réception',payment:'Espèces',discount:0,tvaRate:18,deposit:0,currency:'FCFA',lines:[{desc:'Design identité visuelle',qty:1,price:200000}],bank:'',iban:'',momo:'',bic:'',notes:'Merci pour votre confiance.',legal:'',status:'paid'},
-  {id:'004',client:0,issue:'2026-08-20',due:'2026-09-10',delivery:'',type:'Devis',ref:'SEO-2026',subject:'Formation SEO',contact:'Sophie Kamga',billAddr:'Avenue Kennedy, Yaoundé',terms:'Net 15 jours',payment:'Chèque',discount:0,tvaRate:18,deposit:0,currency:'FCFA',lines:[{desc:'Formation SEO',qty:5,price:40000}],bank:'',iban:'',momo:'',bic:'',notes:'',legal:'',status:'paid'},
-  {id:'005',client:3,issue:'2026-09-10',due:'2026-10-10',delivery:'',type:'Facture',ref:'LEGAL-2026-02',subject:'Consultation + Rédaction contrats',contact:'Me. Charles Ndjama',billAddr:'Bastos, Yaoundé',terms:'Net 30 jours',payment:'Virement bancaire',discount:10,tvaRate:19.25,deposit:0,currency:'FCFA',lines:[{desc:'Consultation juridique',qty:8,price:50000},{desc:'Rédaction contrat',qty:2,price:120000}],bank:'UBA Cameroun',iban:'CM21 4567 0001 5678',momo:'',bic:'UNAFCMCX',notes:'Brouillon.',legal:'N° Contribuable : M987654321B',status:'draft'},
+  {id:'001',clientName:'Agence Alpha',issue:'2026-09-12',due:'2026-09-30',delivery:'',type:'Facture',ref:'PROJ-2026-01',subject:'Création site web + maintenance',contact:'Sophie Kamga',billAddr:'Avenue Kennedy, Yaoundé',terms:'Net 30 jours',payment:'Virement bancaire',discount:0,tvaRate:18,deposit:0,currency:'FCFA',lines:[{desc:'Création site web',qty:1,price:350000},{desc:'Maintenance mensuelle',qty:3,price:80000}],bank:'Afriland First Bank',iban:'CM21 3001 4000 1234',momo:'+237 691 234 567',bic:'AFBACMCX',notes:'Paiement à 30 jours.',legal:'RCCM : RC/YAO/2022/A/1234',status:'sent'},
+  {id:'002',clientName:'Tech Innov SARL',issue:'2026-09-08',due:'2026-09-22',delivery:'',type:'Facture',ref:'DEV-MOB-2026',subject:'Application mobile',contact:'Paul Biya Jr.',billAddr:'Rue Joseph Mballa, Yaoundé',terms:"50% d'avance",payment:'Mobile Money',discount:5,tvaRate:18,deposit:500000,currency:'FCFA',lines:[{desc:'Développement application mobile',qty:1,price:1000000}],bank:'',iban:'',momo:'+237 677 890 123',bic:'',notes:'',legal:'',status:'overdue'},
+  {id:'003',clientName:'Maison Ekié',issue:'2026-09-05',due:'2026-09-25',delivery:'2026-09-10',type:'Facture',ref:'DESIGN-2026-03',subject:'Identité visuelle',contact:'',billAddr:'Akwa, Douala',terms:'Paiement à réception',payment:'Espèces',discount:0,tvaRate:18,deposit:0,currency:'FCFA',lines:[{desc:'Design identité visuelle',qty:1,price:200000}],bank:'',iban:'',momo:'',bic:'',notes:'Merci pour votre confiance.',legal:'',status:'paid'},
+  {id:'004',clientName:'Agence Alpha',issue:'2026-08-20',due:'2026-09-10',delivery:'',type:'Devis',ref:'SEO-2026',subject:'Formation SEO',contact:'Sophie Kamga',billAddr:'Avenue Kennedy, Yaoundé',terms:'Net 15 jours',payment:'Chèque',discount:0,tvaRate:18,deposit:0,currency:'FCFA',lines:[{desc:'Formation SEO',qty:5,price:40000}],bank:'',iban:'',momo:'',bic:'',notes:'',legal:'',status:'paid'},
+  {id:'005',clientName:'Cabinet Ndjama',issue:'2026-09-10',due:'2026-10-10',delivery:'',type:'Facture',ref:'LEGAL-2026-02',subject:'Consultation + Rédaction contrats',contact:'Me. Charles Ndjama',billAddr:'Bastos, Yaoundé',terms:'Net 30 jours',payment:'Virement bancaire',discount:10,tvaRate:19.25,deposit:0,currency:'FCFA',lines:[{desc:'Consultation juridique',qty:8,price:50000},{desc:'Rédaction contrat',qty:2,price:120000}],bank:'UBA Cameroun',iban:'CM21 4567 0001 5678',momo:'',bic:'UNAFCMCX',notes:'Brouillon.',legal:'N° Contribuable : M987654321B',status:'draft'},
 ];
 let localInvs=[...INV_DATA];
 let curFilter='all',curSearch='',editIdx=null,detailIdx=0,lineCount=0;
@@ -830,17 +842,17 @@ function showToast(msg,d=2800){const t=g('toast');t.textContent=msg;t.style.disp
 function renderInvTable(){
   const rows=localInvs.filter(inv=>{
     const mf=curFilter==='all'||inv.status===curFilter;
-    const ms=curSearch===''||localClients[inv.client].name.toLowerCase().includes(curSearch.toLowerCase());
+    const ms=curSearch===''||(inv.clientName||'').toLowerCase().includes(curSearch.toLowerCase());
     return mf&&ms;
   });
   // Desktop table
   const tb=g('invTbody');
   if(!rows.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-3)">Aucune facture trouvée</td></tr>';}
-  else{tb.innerHTML=rows.map(inv=>{const c=localClients[inv.client];const{total}=calcInv(inv.lines,inv.discount,inv.tvaRate,inv.deposit);const i=localInvs.indexOf(inv);return`<tr onclick="openDetail(${i})"><td><strong>#${inv.id}</strong></td><td>${c.name}</td><td class="muted">${fdate(inv.issue)}</td><td class="muted">${fdate(inv.due)}</td><td><strong>${fmt(total,inv.currency)}</strong></td><td>${sbadge(inv.status)}</td><td><button class="btn btn-ghost btn-icon" onclick="event.stopPropagation();openDetail(${i})" style="font-size:14px">👁</button></td></tr>`;}).join('');}
+  else{tb.innerHTML=rows.map(inv=>{const cname=inv.clientName||'—';const{total}=calcInv(inv.lines,inv.discount,inv.tvaRate,inv.deposit);const i=localInvs.indexOf(inv);return`<tr onclick="openDetail(${i})"><td><strong>#${inv.id}</strong></td><td>${cname}</td><td class="muted">${fdate(inv.issue)}</td><td class="muted">${fdate(inv.due)}</td><td><strong>${fmt(total,inv.currency)}</strong></td><td>${sbadge(inv.status)}</td><td><button class="btn btn-ghost btn-icon" onclick="event.stopPropagation();openDetail(${i})" style="font-size:14px">👁</button></td></tr>`;}).join('');}
   // Mobile cards
   const cl=g('invCardList');
   if(!rows.length){cl.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-3)">Aucune facture trouvée</div>';}
-  else{cl.innerHTML=rows.map(inv=>{const c=localClients[inv.client];const{total}=calcInv(inv.lines,inv.discount,inv.tvaRate,inv.deposit);const i=localInvs.indexOf(inv);return`<div class="inv-card" onclick="openDetail(${i})"><div class="inv-card-top"><span class="inv-card-num">${inv.type||'Fact.'} #${inv.id}</span>${sbadge(inv.status)}</div><div style="font-size:13.5px;font-weight:500;color:var(--text);margin:4px 0">${c.name}</div><div class="inv-card-dates">Émis ${fdate(inv.issue)} · Éch. ${fdate(inv.due)}</div><div class="inv-card-bottom"><span class="inv-card-amount">${fmt(total,inv.currency)}</span><span style="font-size:12px;color:var(--text-3)">${inv.payment||''}</span></div></div>`;}).join('');}
+  else{cl.innerHTML=rows.map(inv=>{const cname2=inv.clientName||'—';const{total}=calcInv(inv.lines,inv.discount,inv.tvaRate,inv.deposit);const i=localInvs.indexOf(inv);return`<div class="inv-card" onclick="openDetail(${i})"><div class="inv-card-top"><span class="inv-card-num">${inv.type||'Fact.'} #${inv.id}</span>${sbadge(inv.status)}</div><div style="font-size:13.5px;font-weight:500;color:var(--text);margin:4px 0">${cname2}</div><div class="inv-card-dates">Émis ${fdate(inv.issue)} · Éch. ${fdate(inv.due)}</div><div class="inv-card-bottom"><span class="inv-card-amount">${fmt(total,inv.currency)}</span><span style="font-size:12px;color:var(--text-3)">${inv.payment||''}</span></div></div>`;}).join('');}
 }
 function filterInv(f,btn){curFilter=f;document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));if(btn)btn.classList.add('active');renderInvTable();}
 function searchInv(v){curSearch=v;renderInvTable();}
@@ -853,7 +865,7 @@ function initForm(inv=null){
   const due30=new Date(Date.now()+30*864e5).toISOString().split('T')[0];
   g('fc-num').value=inv?'#'+inv.id:'#00'+(localInvs.length+1);
   g('fc-ref').value=inv?inv.ref:'';g('fc-type').value=inv?inv.type:'Facture';
-  g('fc-client').value=inv?inv.client:'';g('fc-contact').value=inv?inv.contact:'';
+  g('fc-client').value=inv?(inv.clientName||''):'';g('fc-contact').value=inv?inv.contact:'';
   g('fc-bill-addr').value=inv?inv.billAddr:'';
   g('fc-issue').value=inv?inv.issue:today;g('fc-due').value=inv?inv.due:due30;
   g('fc-delivery').value=inv?inv.delivery:'';g('fc-terms').value=inv?inv.terms:'Net 30 jours';
@@ -890,8 +902,13 @@ function rp(){
   g('prev-doctype').innerHTML=type+' <span id="prev-num">'+num+'</span>';
   g('prev-issue').textContent=fdate(issue);g('prev-due').textContent=fdate(due);
   if(ref){g('prev-ref-line').style.display='block';g('prev-ref').textContent=ref;}else g('prev-ref-line').style.display='none';
-  if(!isNaN(ci)&&localClients[ci]){const c=localClients[ci];g('prev-to-name').textContent=c.name;g('prev-to-detail').innerHTML=c.company+'<br>'+c.email+'<br>'+c.phone;}
-  else{g('prev-to-name').textContent='—';g('prev-to-detail').textContent='Sélectionner un client';}
+  const clientNameVal=g('fc-client').value.trim();
+  const matchedC=localClients.find(c=>c.name.toLowerCase()===clientNameVal.toLowerCase());
+  if(clientNameVal){
+    g('prev-to-name').textContent=clientNameVal;
+    if(matchedC){g('prev-to-detail').innerHTML=matchedC.company+'<br>'+matchedC.email+'<br>'+matchedC.phone;}
+    else{g('prev-to-detail').textContent='';}
+  }else{g('prev-to-name').textContent='—';g('prev-to-detail').textContent='Saisir un client';}
   const tb=g('prev-lines');
   if(!lines.length||lines.every(l=>!l.desc)){tb.innerHTML='<tr><td colspan="4" style="color:var(--text-3);text-align:center;padding:14px;font-size:12px">Aucune ligne</td></tr>';}
   else{tb.innerHTML=lines.filter(l=>l.desc||l.price).map(l=>`<tr><td>${l.desc||'—'}</td><td>${l.qty}</td><td class="r">${Math.round(l.price).toLocaleString('fr-FR')}</td><td class="r">${Math.round((l.qty||0)*(l.price||0)).toLocaleString('fr-FR')}</td></tr>`).join('');}
@@ -904,16 +921,30 @@ function rp(){
   if(noteStr){g('prev-notes-section').style.display='block';g('prev-notes-content').innerHTML=noteStr;}else g('prev-notes-section').style.display='none';
 }
 function saveInv(status){
-  const ci=parseInt(g('fc-client').value);if(isNaN(ci)||ci<0){showToast('⚠ Sélectionnez un client');return;}
+  const clientNameSave=g('fc-client').value.trim();
+  if(!clientNameSave){showToast('⚠ Saisissez un nom de client');return;}
+  // Auto-add to localClients if new name
+  const existsAlready=localClients.find(c=>c.name.toLowerCase()===clientNameSave.toLowerCase());
+  if(!existsAlready){
+    const ini=clientNameSave.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const cols=['#dbeafe|#1e40af','#d1fae5|#065f46','#fef3c7|#92400e','#ede9fe|#5b21b6','#fce7f3|#9d174d'];
+    const rc=cols[localClients.length%cols.length].split('|');
+    localClients.push({name:clientNameSave,company:clientNameSave,email:'',phone:'',address:'',color:rc[0],tc:rc[1],initials:ini,invoices:0,total:'0'});
+  }
   const lines=getLines().filter(l=>l.desc);if(!lines.length){showToast('⚠ Ajoutez au moins une ligne');return;}
-  const inv={id:g('fc-num').value.replace('#','').padStart(3,'0'),client:ci,issue:g('fc-issue').value,due:g('fc-due').value,delivery:g('fc-delivery').value,type:g('fc-type').value,ref:g('fc-ref').value,subject:g('fc-subject').value,contact:g('fc-contact').value,billAddr:g('fc-bill-addr').value,terms:g('fc-terms').value,payment:g('fc-payment').value,discount:parseFloat(g('fc-discount').value)||0,tvaRate:parseFloat(g('fc-tva-rate').value)||18,deposit:parseFloat(g('fc-deposit').value)||0,currency:g('fc-currency').value,lines,bank:g('fc-bank').value,iban:g('fc-iban').value,momo:g('fc-momo').value,bic:g('fc-bic').value,notes:g('fc-notes').value,legal:g('fc-legal').value,status};
+  const inv={id:g('fc-num').value.replace('#','').padStart(3,'0'),clientName:clientNameSave,issue:g('fc-issue').value,due:g('fc-due').value,delivery:g('fc-delivery').value,type:g('fc-type').value,ref:g('fc-ref').value,subject:g('fc-subject').value,contact:g('fc-contact').value,billAddr:g('fc-bill-addr').value,terms:g('fc-terms').value,payment:g('fc-payment').value,discount:parseFloat(g('fc-discount').value)||0,tvaRate:parseFloat(g('fc-tva-rate').value)||18,deposit:parseFloat(g('fc-deposit').value)||0,currency:g('fc-currency').value,lines,bank:g('fc-bank').value,iban:g('fc-iban').value,momo:g('fc-momo').value,bic:g('fc-bic').value,notes:g('fc-notes').value,legal:g('fc-legal').value,status};
   if(editIdx!==null){localInvs[editIdx]=inv;showToast('✓ Facture mise à jour');}else{localInvs.unshift(inv);showToast(status==='draft'?'💾 Brouillon sauvegardé':'✓ Facture envoyée');}
   editIdx=null;nav('invoices');
 }
 
 // ─── SEND MODAL ───────────────────────────────────────────────────────────────
-function openSendModal(){const ci=parseInt(g('fc-client').value);if(isNaN(ci)||ci<0){showToast('⚠ Sélectionnez un client');return;}_showSend(localClients[ci],g('fc-num').value,'form');}
-function openSendModalDetail(){const inv=localInvs[detailIdx];_showSend(localClients[inv.client],'#'+inv.id,'detail');}
+function openSendModal(){
+  const cname=g('fc-client').value.trim();
+  if(!cname){showToast('⚠ Saisissez un nom de client');return;}
+  const mc=localClients.find(c=>c.name.toLowerCase()===cname.toLowerCase())||{name:cname,company:cname,email:'',phone:''};
+  _showSend(mc,g('fc-num').value,'form');
+}
+function openSendModalDetail(){const inv=localInvs[detailIdx];const sc=localClients.find(cl=>cl.name.toLowerCase()===(inv.clientName||'').toLowerCase())||{name:inv.clientName||'—',company:'',email:''};_showSend(sc,'#'+inv.id,'detail');}
 function _showSend(c,num,origin){
   openModal('Envoyer la facture',`
     <div class="send-field"><div class="sf-label">Destinataire</div><div class="sf-value">${c.name} — ${c.email}</div></div>
@@ -927,7 +958,9 @@ function confirmSend(origin,email,num){closeModal();if(origin==='form'){saveInv(
 
 // ─── INVOICE DETAIL ───────────────────────────────────────────────────────────
 function openDetail(idx){
-  detailIdx=idx;const inv=localInvs[idx];const c=localClients[inv.client];const{sub,discAmt,tva,total,remain}=calcInv(inv.lines,inv.discount,inv.tvaRate,inv.deposit);
+  detailIdx=idx;const inv=localInvs[idx];
+  const c=localClients.find(cl=>cl.name.toLowerCase()===(inv.clientName||'').toLowerCase())||{name:inv.clientName||'—',company:'',email:'',phone:'',address:'',color:'#F3F4F6',tc:'#374151',initials:(inv.clientName||'?').slice(0,2).toUpperCase()};
+  const{sub,discAmt,tva,total,remain}=calcInv(inv.lines,inv.discount,inv.tvaRate,inv.deposit);
   g('pageTitle').textContent=(inv.type||'Facture')+' #'+inv.id;
   g('detailTitle').textContent=(inv.type||'Facture')+' #'+inv.id;
   g('detailBadge').innerHTML=sbadge(inv.status);
@@ -948,7 +981,7 @@ function openDetail(idx){
   if(inv.status==='paid')te.push({icon:'✓',label:'Paiement reçu',date:fdate(inv.due),active:true});
   if(inv.status==='overdue')te.push({icon:'⚠',label:'En retard',date:fdate(inv.due),active:false});
   g('detailTimeline').innerHTML=te.map(e=>`<li><div class="tl-dot${e.active?' active':''}"><span style="font-size:10px">${e.icon}</span></div><div><div class="tl-evt">${e.label}</div><div class="tl-date">${e.date}</div></div></li>`).join('');
-  g('detailClientInfo').innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div class="avatar" style="background:${c.color};color:${c.tc};width:36px;height:36px">${c.initials}</div><div><div style="font-size:14px;font-weight:500">${c.name}</div><div style="font-size:12px;color:var(--text-3)">${c.company}</div></div></div><div class="cl-detail"><span class="cl-icon">✉</span>${c.email}</div><div class="cl-detail"><span class="cl-icon">☏</span>${c.phone}</div><div class="cl-detail"><span class="cl-icon">📍</span>${c.address}</div><div style="margin-top:12px"><button class="btn btn-ghost btn-sm" onclick="nav('clients')" style="width:100%">Voir tous les clients →</button></div>`;
+  g('detailClientInfo').innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div class="avatar" style="background:${c.color||'#F3F4F6'};color:${c.tc||'#374151'};width:36px;height:36px">${c.initials||(inv.clientName||'?').slice(0,2).toUpperCase()}</div><div><div style="font-size:14px;font-weight:500">${c.name}</div><div style="font-size:12px;color:var(--text-3)">${c.company}</div></div></div><div class="cl-detail"><span class="cl-icon">✉</span>${c.email}</div><div class="cl-detail"><span class="cl-icon">☏</span>${c.phone}</div><div class="cl-detail"><span class="cl-icon">📍</span>${c.address}</div><div style="margin-top:12px"><button class="btn btn-ghost btn-sm" onclick="nav('clients')" style="width:100%">Voir tous les clients →</button></div>`;
   // Navigate without closing sidebar (already closed)
   document.querySelectorAll('.page,.inv-split').forEach(p=>{p.classList.remove('active');p.style.display='none';});
   g('pageTitle').textContent=(inv.type||'Facture')+' #'+inv.id;
@@ -982,7 +1015,7 @@ function saveClient(idx,col,tc){
   const cl={name,initials,company:g('cl-company').value||name,email,phone:g('cl-phone').value,address:g('cl-addr').value,color:idx!==null?localClients[idx].color:col,tc:idx!==null?localClients[idx].tc:tc,invoices:idx!==null?localClients[idx].invoices:0,total:idx!==null?localClients[idx].total:'0'};
   if(idx!==null)localClients[idx]=cl;else localClients.push(cl);
   closeModal();renderClients();
-  const sel=g('fc-client');if(sel){sel.innerHTML='<option value="">Sélectionner…</option>'+localClients.map((c,i)=>`<option value="${i}">${c.name}</option>`).join('');}
+  // client field is free-text, no update needed
   showToast(idx!==null?'✓ Client mis à jour':'✓ Client créé');
 }
 function delClient(idx){openModal('Supprimer',`<div class="confirm-box">⚠ Supprimer <strong>${localClients[idx].name}</strong> ?</div>`,`<button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-danger" onclick="confirmDelCl(${idx})">Supprimer</button>`);}
@@ -999,6 +1032,67 @@ function liveUpdateSidebar(){const name=g('st-company')?.value||settings.company
 function handleLogoUpload(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{settings.logoSrc=e.target.result;const box=g('logo-preview-box');box.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;showToast('✓ Logo chargé');};reader.readAsDataURL(file);}
 function pickColor(color,el){document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));el.classList.add('active');settings.accentColor=color;document.documentElement.style.setProperty('--accent',color);const lm=g('sb-logo-mark');if(lm)lm.style.background=color;showToast('🎨 Couleur appliquée');}
 function toggleSwitch(el){el.classList.toggle('on');}
+
+
+// ─── AUTOCOMPLETE CLIENT ──────────────────────────────────────────────────────
+let _suggTimeout=null;
+function onClientInput(val){
+  clearTimeout(_suggTimeout);
+  _suggTimeout=setTimeout(()=>showClientSugg(val),120);
+  rp();
+}
+function showClientSugg(val){
+  const box=g('client-sugg');if(!box)return;
+  const q=val.trim().toLowerCase();
+  // Collect all unique client names from localClients + localInvs
+  const allNames=new Map();
+  localClients.forEach(c=>allNames.set(c.name,c));
+  localInvs.forEach(inv=>{if(inv.clientName&&!allNames.has(inv.clientName))allNames.set(inv.clientName,null);});
+  
+  const filtered=q===''
+    ?[...allNames.entries()].slice(0,6)
+    :[...allNames.entries()].filter(([name])=>name.toLowerCase().includes(q));
+  
+  if(!filtered.length&&q===''){box.style.display='none';return;}
+  
+  let html='';
+  filtered.slice(0,8).forEach(([name,client])=>{
+    const initials=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const col=client?client.color:'#F3F4F6';const tc=client?client.tc:'#374151';
+    const company=client?client.company:'';
+    html+=`<div class="client-sugg-item" onmousedown="pickClient('${name.replace(/'/g,"\\'")}')">
+      <div class="client-sugg-avatar" style="background:${col};color:${tc}">${initials}</div>
+      <div><div class="sugg-name">${name}</div>${company?`<div class="sugg-company">${company}</div>`:''}</div>
+    </div>`;
+  });
+  
+  // Option to add as new client if not exact match
+  const exactMatch=[...allNames.keys()].some(n=>n.toLowerCase()===q);
+  if(q&&!exactMatch){
+    html+=`<div class="client-sugg-new" onmousedown="pickClient('${val.trim().replace(/'/g,"\\'")}')">
+      <span style="font-size:16px">＋</span> Utiliser "<strong>${val.trim()}</strong>"
+    </div>`;
+  }
+  
+  box.innerHTML=html;
+  box.style.display=filtered.length||(!exactMatch&&q)?'block':'none';
+}
+function pickClient(name){
+  const el=g('fc-client');if(el)el.value=name;
+  const box=g('client-sugg');if(box)box.style.display='none';
+  // Auto-fill address if known client
+  const mc=localClients.find(c=>c.name.toLowerCase()===name.toLowerCase());
+  if(mc){
+    const addr=g('fc-bill-addr');if(addr&&!addr.value)addr.value=mc.address||'';
+  }
+  rp();
+}
+function hideClientSugg(){
+  setTimeout(()=>{const box=g('client-sugg');if(box)box.style.display='none';},200);
+}
+function showAllSugg(){
+  const el=g('fc-client');if(el)showClientSugg(el.value);
+}
 
 // ─── MODAL ────────────────────────────────────────────────────────────────────
 function openModal(title,body,footer=''){g('modalTitle').textContent=title;g('modalBody').innerHTML=body;g('modalFooter').innerHTML=footer;g('modalFooter').style.display=footer?'flex':'none';g('modalOverlay').style.display='flex';}
