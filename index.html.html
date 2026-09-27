@@ -189,6 +189,25 @@ select.form-control{cursor:pointer}
 .gs-amount{font-size:13px;font-weight:500;color:var(--text-2)}
 @media(max-width:768px){#chartsRow{grid-template-columns:1fr !important}#statusDistCard{display:none !important}}
 
+
+/* ── AUTH ── */
+.auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9998;padding:20px}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:0 20px 60px rgba(0,0,0,.12);width:100%;max-width:400px;padding:36px 32px}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;justify-content:center}
+.auth-logo-mark{width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700}
+.auth-title{font-size:20px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px}
+.auth-sub{font-size:13.5px;color:var(--text-3);text-align:center;margin-bottom:28px}
+.auth-tabs{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:3px;margin-bottom:24px}
+.auth-tab{flex:1;text-align:center;padding:7px;border-radius:6px;font-size:13.5px;font-weight:500;cursor:pointer;border:none;background:none;font-family:inherit;color:var(--text-2);transition:all .15s}
+.auth-tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.auth-error{background:var(--red-bg);border:1px solid #FECACA;border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--red-text);margin-bottom:16px;display:none}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--text-3);font-size:12px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-footer{font-size:12px;color:var(--text-3);text-align:center;margin-top:20px}
+.user-badge{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg);border-radius:var(--r);font-size:12.5px;color:var(--text-2);border:1px solid var(--border)}
+.btn-logout{background:none;border:1px solid var(--border);color:var(--text-3);padding:6px 10px;border-radius:var(--r);font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-logout:hover{background:var(--red-bg);color:var(--red-text);border-color:#FECACA}
+
 /* ── AUTOCOMPLETE ── */
 .client-sugg-item{padding:10px 14px;cursor:pointer;font-size:13.5px;color:var(--text);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);transition:background .1s}
 .client-sugg-item:hover{background:var(--accent-bg);color:var(--accent-text)}
@@ -327,6 +346,124 @@ select.form-control{cursor:pointer}
 <body>
 
 <!-- Loading Screen -->
+<!-- ══ AUTH SCREEN ══ -->
+<div class="auth-screen" id="authScreen" style="display:none">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-mark">F</div>
+      <span style="font-size:18px;font-weight:700;color:var(--text)">FacturePro</span>
+    </div>
+    <div class="auth-title" id="auth-title">Bienvenue</div>
+    <div class="auth-sub" id="auth-sub">Connectez-vous à votre espace de facturation</div>
+
+    <!-- Tabs Login / Register -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Se connecter</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Créer un compte</button>
+    </div>
+
+    <!-- Error message -->
+    <div class="auth-error" id="auth-error"></div>
+
+    <!-- LOGIN FORM -->
+    <div id="form-login">
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-control" id="login-email" placeholder="vous@entreprise.cm" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe *</label>
+        <div style="position:relative">
+          <input type="password" class="form-control" id="login-pwd" placeholder="••••••••" autocomplete="current-password" style="padding-right:40px" onkeydown="if(event.key==='Enter')doLogin()">
+          <button type="button" onclick="togglePwd('login-pwd',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-3)">👁</button>
+        </div>
+      </div>
+      <div style="text-align:right;margin-bottom:20px">
+        <button class="btn btn-ghost btn-sm" onclick="doResetPwd()" style="padding:0;font-size:12.5px;color:var(--accent)">Mot de passe oublié ?</button>
+      </div>
+      <button class="btn btn-primary" id="btn-login" onclick="doLogin()" style="width:100%;justify-content:center;padding:11px">
+        Se connecter
+      </button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="form-register" style="display:none">
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:14px">
+          <label class="form-label">Prénom *</label>
+          <input type="text" class="form-control" id="reg-firstname" placeholder="Jean" autocomplete="given-name">
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+          <label class="form-label">Nom *</label>
+          <input type="text" class="form-control" id="reg-lastname" placeholder="Mbeki" autocomplete="family-name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email professionnel *</label>
+        <input type="email" class="form-control" id="reg-email" placeholder="vous@entreprise.cm" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe *</label>
+        <div style="position:relative">
+          <input type="password" class="form-control" id="reg-pwd" placeholder="Min. 8 caractères" autocomplete="new-password" style="padding-right:40px" oninput="checkPwdStrength(this.value)">
+          <button type="button" onclick="togglePwd('reg-pwd',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-3)">👁</button>
+        </div>
+        <div id="pwd-strength" style="margin-top:6px;height:4px;border-radius:2px;background:var(--border);overflow:hidden">
+          <div id="pwd-strength-bar" style="height:100%;width:0;border-radius:2px;transition:all .3s"></div>
+        </div>
+        <div id="pwd-strength-label" style="font-size:11px;color:var(--text-3);margin-top:4px"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nom de l'entreprise</label>
+        <input type="text" class="form-control" id="reg-company" placeholder="Mon Entreprise SARL">
+      </div>
+      <button class="btn btn-primary" id="btn-register" onclick="doRegister()" style="width:100%;justify-content:center;padding:11px;margin-top:4px">
+        Créer mon compte →
+      </button>
+    </div>
+
+    <div class="auth-footer">En vous connectant, vous acceptez les <span style="color:var(--accent)">CGU</span> de FacturePro</div>
+  </div>
+</div>
+
+<!-- ══ EMAIL CONFIRM SCREEN ══ -->
+<div class="auth-screen" id="confirmScreen" style="display:none">
+  <div class="auth-card" style="text-align:center">
+    <div style="font-size:48px;margin-bottom:16px">📧</div>
+    <div class="auth-title">Vérifiez votre email</div>
+    <div class="auth-sub" id="confirm-email-text">Un lien de confirmation a été envoyé à votre adresse email.</div>
+    <div style="background:var(--bg);border-radius:var(--r);padding:14px;margin:20px 0;font-size:13px;color:var(--text-2)">
+      Cliquez sur le lien dans l'email pour activer votre compte, puis revenez ici pour vous connecter.
+    </div>
+    <button class="btn btn-secondary" onclick="switchAuthTab('login');g('confirmScreen').style.display='none';g('authScreen').style.display='flex'" style="width:100%;justify-content:center">
+      ← Retour à la connexion
+    </button>
+  </div>
+</div>
+
+<!-- ══ RESET PWD SCREEN ══ -->
+<div class="auth-screen" id="resetScreen" style="display:none">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-mark">F</div>
+      <span style="font-size:18px;font-weight:700;color:var(--text)">FacturePro</span>
+    </div>
+    <div class="auth-title">Réinitialiser le mot de passe</div>
+    <div class="auth-sub">Entrez votre email pour recevoir un lien de réinitialisation</div>
+    <div class="auth-error" id="reset-error"></div>
+    <div class="form-group">
+      <label class="form-label">Email *</label>
+      <input type="email" class="form-control" id="reset-email" placeholder="vous@entreprise.cm">
+    </div>
+    <button class="btn btn-primary" onclick="doSendReset()" style="width:100%;justify-content:center;padding:11px;margin-bottom:12px">
+      Envoyer le lien
+    </button>
+    <button class="btn btn-ghost" onclick="g('resetScreen').style.display='none';g('authScreen').style.display='flex'" style="width:100%;justify-content:center">
+      ← Retour
+    </button>
+  </div>
+</div>
+
 <div class="loading-screen" id="loadingScreen">
   <div class="loading-logo">F</div>
   <div class="loading-spinner"></div>
@@ -371,8 +508,13 @@ select.form-control{cursor:pointer}
       <button class="hamburger" onclick="openSidebar()">☰</button>
       <div class="page-title" id="pageTitle">Tableau de bord</div>
     </div>
-    <div class="topbar-right">
+    <div class="topbar-right" style="gap:8px">
+      <div class="user-badge" id="topbar-user" style="display:none">
+        <div class="avatar" id="topbar-avatar" style="width:24px;height:24px;font-size:10px;flex-shrink:0">?</div>
+        <span id="topbar-email" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      </div>
       <button class="btn btn-secondary btn-sm" onclick="nav('invoice-create')">+ Nouvelle facture</button>
+      <button class="btn-logout" id="btn-logout" onclick="doLogout()" style="display:none" title="Se déconnecter">⎋ Quitter</button>
     </div>
   </header>
 
@@ -613,7 +755,7 @@ select.form-control{cursor:pointer}
     <div class="inv-prev-panel">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <span style="font-size:12px;font-weight:500;color:var(--text-3)">Aperçu en temps réel</span>
-        <button class="btn btn-ghost btn-sm" onclick="printInvoice()">🖨 Imprimer / PDF</button>
+        <button class="btn btn-secondary btn-sm" onclick="printInvoice()">⬇ Aperçu PDF</button>
       </div>
       <div class="inv-preview" id="invoicePreview">
         <div class="prev-logo-area">
@@ -665,7 +807,7 @@ select.form-control{cursor:pointer}
         <button class="btn btn-success btn-sm" onclick="openSendModalDetail()">✉ Envoyer</button>
         <button class="btn btn-secondary btn-sm" onclick="editInv()">✏ Modifier</button>
         <button class="btn btn-secondary btn-sm" onclick="changeStatus()">⟳ Statut</button>
-        <button class="btn btn-ghost btn-sm" onclick="printDetail()">🖨 PDF</button>
+        <button class="btn btn-secondary btn-sm" onclick="printDetail()">⬇ PDF</button>
         <button class="btn btn-danger btn-sm" onclick="deleteInv()">✕</button>
       </div>
     </div>
@@ -809,13 +951,35 @@ select.form-control{cursor:pointer}
         <div class="st-section card" id="st-security">
           <div class="card-header"><div class="card-title">Sécurité & Compte</div></div>
           <div class="card-body">
-            <div style="font-size:13.5px;font-weight:500;margin-bottom:14px">Changer le mot de passe</div>
-            <div class="form-group"><label class="form-label">Mot de passe actuel</label><input type="password" class="form-control" placeholder="••••••••"></div>
-            <div class="form-row">
-              <div class="form-group"><label class="form-label">Nouveau</label><input type="password" class="form-control" placeholder="••••••••"></div>
-              <div class="form-group"><label class="form-label">Confirmer</label><input type="password" class="form-control" placeholder="••••••••"></div>
+            <!-- Compte connecté -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+              <div>
+                <div style="font-size:13.5px;font-weight:500;color:var(--text)">Compte connecté</div>
+                <div style="font-size:12px;color:var(--text-3);margin-top:2px">Gérez vos identifiants de connexion</div>
+              </div>
+              <div class="user-badge" id="sec-user-email" style="font-size:12px">—</div>
             </div>
-            <button class="btn btn-secondary" onclick="showToast('✓ Fonctionnalité disponible avec l\'authentification complète')">Mettre à jour</button>
+            <!-- Changer mot de passe -->
+            <div style="font-size:13.5px;font-weight:500;margin-bottom:14px">Changer le mot de passe</div>
+            <div class="form-group">
+              <label class="form-label">Nouveau mot de passe *</label>
+              <div style="position:relative">
+                <input type="password" class="form-control" id="sec-pwd-new" placeholder="Minimum 8 caractères" style="padding-right:40px" oninput="checkPwdStrength(this.value)">
+                <button type="button" onclick="togglePwd('sec-pwd-new',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-3)">👁</button>
+              </div>
+              <div style="margin-top:6px;height:4px;border-radius:2px;background:var(--border);overflow:hidden">
+                <div id="pwd-strength-bar" style="height:100%;width:0;border-radius:2px;transition:all .3s"></div>
+              </div>
+              <div id="pwd-strength-label" style="font-size:11px;color:var(--text-3);margin-top:4px"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirmer le mot de passe *</label>
+              <div style="position:relative">
+                <input type="password" class="form-control" id="sec-pwd-confirm" placeholder="••••••••" style="padding-right:40px">
+                <button type="button" onclick="togglePwd('sec-pwd-confirm',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-3)">👁</button>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="doChangePassword()">🔑 Mettre à jour le mot de passe</button>
             <div style="border-top:1px solid var(--border);padding-top:18px;margin-top:18px">
               <div class="switch-row"><div><div class="sw-title">Double authentification (2FA)</div><div class="sw-desc">Sécurisez votre compte</div></div><div class="switch" onclick="this.classList.toggle('on');showToast('⚠ 2FA disponible avec auth complète')" ontouchend="event.preventDefault();this.classList.toggle('on');showToast('⚠ 2FA disponible avec auth complète')"></div></div>
               <div class="switch-row"><div><div class="sw-title">Déconnexion automatique</div><div class="sw-desc">Après 30 min d'inactivité</div></div><div class="switch on" onclick="this.classList.toggle(\'on\')" ontouchend="event.preventDefault();this.classList.toggle(\'on\')"></div></div>
@@ -860,14 +1024,67 @@ select.form-control{cursor:pointer}
 
 <!-- Print styles -->
 <style id="printStyles">
+/* ══ PDF / PRINT — Mise en page A4 professionnelle ══ */
 @media print {
-  body * { visibility: hidden !important; }
-  #printArea, #printArea * { visibility: visible !important; }
-  #printArea { position: fixed; top: 0; left: 0; width: 100%; padding: 40px; background: white; }
-  .inv-preview { box-shadow: none !important; border: none !important; max-width: 100% !important; }
+  /* Masquer toute l'interface */
+  body > *:not(#pdfOverlay) { display: none !important; }
+  #pdfOverlay { display: block !important; position: static !important; background: white !important; }
+
+  /* Reset page */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  /* Zone d'impression */
+  #pdfDoc {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 14mm 14mm 18mm 14mm;
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 10pt;
+    color: #1A1A18;
+    background: white;
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  /* Éviter les coupures malheureuses */
+  .pdf-lines-table { page-break-inside: avoid; }
+  .pdf-totals-block { page-break-inside: avoid; }
+  .pdf-footer { page-break-before: avoid; }
+
+  /* Boutons masqués */
+  .pdf-close-btn, button { display: none !important; }
 }
 </style>
 <div id="printArea" style="display:none"></div>
+
+<!-- ══ PDF OVERLAY — Preview avant impression ══ -->
+<div id="pdfOverlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.6);overflow-y:auto">
+  <!-- Toolbar -->
+  <div id="pdfToolbar" style="position:sticky;top:0;z-index:10001;background:#1A1A18;color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:14px;font-weight:600" id="pdf-toolbar-title">Aperçu PDF</div>
+      <span style="font-size:11px;color:#9B9B98;background:#2A2A28;padding:3px 8px;border-radius:4px">Format A4</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="window.print()" class="pdf-close-btn" style="background:var(--accent);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px">
+        ⬇ Télécharger / Imprimer
+      </button>
+      <button onclick="closePdfOverlay()" class="pdf-close-btn" style="background:#2A2A28;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:13.5px;cursor:pointer;font-family:inherit">
+        ✕ Fermer
+      </button>
+    </div>
+  </div>
+  <!-- Document A4 -->
+  <div style="display:flex;justify-content:center;padding:30px 20px 60px">
+    <div id="pdfDoc" style="width:210mm;min-height:297mm;background:white;box-shadow:0 8px 40px rgba(0,0,0,.4);border-radius:4px;padding:14mm 14mm 18mm 14mm;font-family:'Inter',Arial,sans-serif;font-size:10pt;color:#1A1A18;box-sizing:border-box;position:relative">
+      <!-- Contenu injecté dynamiquement -->
+    </div>
+  </div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════════════
@@ -1701,20 +1918,284 @@ async function confirmDelInv() {
   nav('invoices');
 }
 
-// Print / PDF
-function printInvoice() {
-  const html = g('invoicePreview').innerHTML;
-  g('printArea').innerHTML = `<div class="inv-preview">${html}</div>`;
-  g('printArea').style.display = 'block';
-  window.print();
-  setTimeout(()=>{ g('printArea').style.display='none'; }, 1000);
+// ═══════════════════════════════════════════════════════
+//  PDF — Génération et aperçu A4 professionnel
+// ═══════════════════════════════════════════════════════
+
+function closePdfOverlay() {
+  g('pdfOverlay').style.display = 'none';
+  document.body.style.overflow = '';
 }
-function printDetail() {
-  const html = g('detailPreview').innerHTML;
-  g('printArea').innerHTML = `<div class="inv-preview">${html}</div>`;
-  g('printArea').style.display = 'block';
-  window.print();
-  setTimeout(()=>{ g('printArea').style.display='none'; }, 1000);
+
+function buildPdfDoc(inv, lines, settings) {
+  // Couleur principale depuis les settings ou accent CSS
+  const accentColor = settings?.accent_color ||
+    getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#E85D2F';
+
+  // Infos émetteur
+  const fromName = settings?.name || 'FacturePro';
+  const fromAddr = [settings?.address, settings?.city, settings?.country].filter(Boolean).join(', ');
+  const fromEmail = settings?.email || '';
+  const fromPhone = settings?.phone || '';
+  const fromRCCM = settings?.rccm || '';
+  const fromTax = settings?.tax_number || '';
+  const logoUrl = settings?.logo_url || '';
+
+  // Infos receveur
+  const toName = inv.client_name || '—';
+  const toAddr = inv.billing_address || '';
+  const toContact = inv.contact || '';
+
+  // Dates
+  const issueFmt = fdate(inv.issue_date);
+  const dueFmt = fdate(inv.due_date);
+  const delivFmt = inv.delivery_date ? fdate(inv.delivery_date) : '';
+
+  // Calculs
+  const currency = inv.currency || 'FCFA';
+  const subtotal = parseFloat(inv.subtotal) || 0;
+  const discPct = parseFloat(inv.discount_percent) || 0;
+  const discAmt = parseFloat(inv.discount_amount) || 0;
+  const tvaRate = parseFloat(inv.tva_rate) || 18;
+  const tvaAmt = parseFloat(inv.tva_amount) || 0;
+  const deposit = parseFloat(inv.deposit_amount) || 0;
+  const totalTtc = parseFloat(inv.total_ttc) || 0;
+  const remaining = parseFloat(inv.remaining_amount) || 0;
+
+  // Badges statut pour le tampon
+  const stampMap = {
+    paid: { text: 'PAYÉE', color: '#16A34A' },
+    overdue: { text: 'EN RETARD', color: '#DC2626' },
+    draft: { text: 'BROUILLON', color: '#6B7280' },
+  };
+  const stamp = stampMap[inv.status];
+
+  // Lignes du tableau
+  const linesHtml = (lines || []).map(l => `
+    <tr>
+      <td style="padding:9px 10px;border-bottom:1px solid #F0F0EE;vertical-align:top">${l.description || '—'}</td>
+      <td style="padding:9px 10px;border-bottom:1px solid #F0F0EE;text-align:center">${l.quantity}</td>
+      <td style="padding:9px 10px;border-bottom:1px solid #F0F0EE;text-align:right;white-space:nowrap">${fmt(l.unit_price, currency)}</td>
+      <td style="padding:9px 10px;border-bottom:1px solid #F0F0EE;text-align:right;white-space:nowrap;font-weight:500">${fmt(l.line_total, currency)}</td>
+    </tr>`).join('');
+
+  // Bloc coordonnées bancaires
+  const bankParts = [];
+  if (inv.bank_name || settings?.bank_name) bankParts.push(`<strong>Banque :</strong> ${inv.bank_name || settings?.bank_name}`);
+  if (inv.iban || settings?.iban) bankParts.push(`<strong>IBAN :</strong> ${inv.iban || settings?.iban}`);
+  if (inv.bic || settings?.bic) bankParts.push(`<strong>BIC :</strong> ${inv.bic || settings?.bic}`);
+  if (inv.momo || settings?.momo_mtn) bankParts.push(`<strong>Mobile Money :</strong> ${inv.momo || settings?.momo_mtn}`);
+
+  const bankHtml = bankParts.length ? `
+    <div style="margin-top:20px;padding:12px 14px;background:#F9F9F7;border-radius:6px;border-left:3px solid ${accentColor};font-size:9pt;line-height:1.8">
+      <div style="font-weight:600;margin-bottom:4px;color:${accentColor}">COORDONNÉES DE PAIEMENT</div>
+      ${bankParts.join('<br>')}
+      ${inv.payment ? `<br><strong>Mode :</strong> ${inv.payment}` : ''}
+      ${inv.terms ? ` — <strong>Délai :</strong> ${inv.terms}` : ''}
+    </div>` : '';
+
+  const notesHtml = inv.notes ? `
+    <div style="margin-top:14px;padding:10px 14px;border:1px solid #E5E5E3;border-radius:6px;font-size:9pt;color:#6B6B68;line-height:1.7">
+      <strong style="color:#1A1A18">Notes :</strong> ${inv.notes}
+    </div>` : '';
+
+  const legalHtml = (inv.legal_mentions || settings?.default_legal_mention) ? `
+    <div style="margin-top:10px;font-size:8pt;color:#9B9B98;line-height:1.6">
+      ${inv.legal_mentions || settings?.default_legal_mention}
+    </div>` : '';
+
+  return `
+  <!-- EN-TÊTE -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px">
+    <!-- Logo + émetteur -->
+    <div style="max-width:200px">
+      ${logoUrl
+        ? `<img src="${logoUrl}" style="height:50px;width:auto;object-fit:contain;margin-bottom:10px;display:block">`
+        : `<div style="width:48px;height:48px;background:#1A1A18;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:700;margin-bottom:10px">${fromName[0]?.toUpperCase()||'F'}</div>`
+      }
+      <div style="font-size:13pt;font-weight:700;color:#1A1A18">${fromName}</div>
+      ${fromAddr ? `<div style="font-size:8.5pt;color:#6B6B68;margin-top:3px;line-height:1.6">${fromAddr}</div>` : ''}
+      ${fromEmail ? `<div style="font-size:8.5pt;color:#6B6B68">${fromEmail}</div>` : ''}
+      ${fromPhone ? `<div style="font-size:8.5pt;color:#6B6B68">${fromPhone}</div>` : ''}
+      ${fromRCCM ? `<div style="font-size:7.5pt;color:#9B9B98;margin-top:4px">RCCM : ${fromRCCM}</div>` : ''}
+      ${fromTax ? `<div style="font-size:7.5pt;color:#9B9B98">N° Contribuable : ${fromTax}</div>` : ''}
+    </div>
+    <!-- Titre facture -->
+    <div style="text-align:right">
+      <div style="font-size:22pt;font-weight:800;color:${accentColor};letter-spacing:-0.5px">${inv.type || 'FACTURE'}</div>
+      <div style="font-size:14pt;font-weight:700;color:#1A1A18;margin-top:2px">${inv.invoice_number}</div>
+      ${inv.reference ? `<div style="font-size:8.5pt;color:#9B9B98;margin-top:4px">Réf : ${inv.reference}</div>` : ''}
+      ${inv.subject ? `<div style="font-size:8.5pt;color:#6B6B68;margin-top:2px;max-width:200px;text-align:right">${inv.subject}</div>` : ''}
+    </div>
+  </div>
+
+  <!-- BANDEAU DATES -->
+  <div style="display:flex;gap:0;margin-bottom:24px;border:1px solid #E5E5E3;border-radius:8px;overflow:hidden">
+    <div style="flex:1;padding:10px 16px;border-right:1px solid #E5E5E3">
+      <div style="font-size:7.5pt;font-weight:600;color:#9B9B98;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Date d'émission</div>
+      <div style="font-size:10.5pt;font-weight:600;color:#1A1A18">${issueFmt}</div>
+    </div>
+    <div style="flex:1;padding:10px 16px;border-right:1px solid #E5E5E3;background:${accentColor}08">
+      <div style="font-size:7.5pt;font-weight:600;color:#9B9B98;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Date d'échéance</div>
+      <div style="font-size:10.5pt;font-weight:600;color:${inv.status==='overdue'?'#DC2626':'#1A1A18'}">${dueFmt}</div>
+    </div>
+    ${delivFmt ? `<div style="flex:1;padding:10px 16px"><div style="font-size:7.5pt;font-weight:600;color:#9B9B98;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Livraison</div><div style="font-size:10.5pt;font-weight:600;color:#1A1A18">${delivFmt}</div></div>` : ''}
+    <div style="flex:1;padding:10px 16px;background:#F9F9F7">
+      <div style="font-size:7.5pt;font-weight:600;color:#9B9B98;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Statut</div>
+      <div style="font-size:9pt;font-weight:600;color:${{paid:'#16A34A',overdue:'#DC2626',sent:'#D97706',draft:'#6B7280'}[inv.status]||'#1A1A18'}">${{paid:'✓ Payée',overdue:'⚠ En retard',sent:'📤 Envoyée',draft:'📝 Brouillon'}[inv.status]||inv.status}</div>
+    </div>
+  </div>
+
+  <!-- PARTIES -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px">
+    <div style="padding:14px;background:#F9F9F7;border-radius:8px">
+      <div style="font-size:7.5pt;font-weight:700;color:#9B9B98;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">DE</div>
+      <div style="font-size:11pt;font-weight:700;color:#1A1A18;margin-bottom:3px">${fromName}</div>
+      <div style="font-size:8.5pt;color:#6B6B68;line-height:1.7">${fromAddr}${fromEmail?'<br>'+fromEmail:''}${fromPhone?'<br>'+fromPhone:''}</div>
+    </div>
+    <div style="padding:14px;border:2px solid ${accentColor};border-radius:8px">
+      <div style="font-size:7.5pt;font-weight:700;color:${accentColor};text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">FACTURÉ À</div>
+      <div style="font-size:11pt;font-weight:700;color:#1A1A18;margin-bottom:3px">${toName}</div>
+      <div style="font-size:8.5pt;color:#6B6B68;line-height:1.7">
+        ${toAddr || ''}
+        ${toContact ? `<br><em>${toContact}</em>` : ''}
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLEAU LIGNES -->
+  <div class="pdf-lines-table">
+    <table style="width:100%;border-collapse:collapse;margin-bottom:4px">
+      <thead>
+        <tr style="background:${accentColor};color:white">
+          <th style="padding:9px 10px;text-align:left;font-size:8pt;font-weight:600;letter-spacing:.05em;text-transform:uppercase;border-radius:6px 0 0 0">Description</th>
+          <th style="padding:9px 10px;text-align:center;font-size:8pt;font-weight:600;letter-spacing:.05em;text-transform:uppercase;width:50px">Qté</th>
+          <th style="padding:9px 10px;text-align:right;font-size:8pt;font-weight:600;letter-spacing:.05em;text-transform:uppercase;width:120px">Prix unit.</th>
+          <th style="padding:9px 10px;text-align:right;font-size:8pt;font-weight:600;letter-spacing:.05em;text-transform:uppercase;width:120px;border-radius:0 6px 0 0">Total HT</th>
+        </tr>
+      </thead>
+      <tbody>${linesHtml || '<tr><td colspan="4" style="padding:16px;text-align:center;color:#9B9B98">Aucune ligne</td></tr>'}</tbody>
+    </table>
+  </div>
+
+  <!-- TOTAUX -->
+  <div class="pdf-totals-block" style="display:flex;justify-content:flex-end;margin-top:8px;margin-bottom:24px">
+    <div style="min-width:260px;border:1px solid #E5E5E3;border-radius:8px;overflow:hidden">
+      <div style="display:flex;justify-content:space-between;padding:8px 14px;font-size:9pt;border-bottom:1px solid #F0F0EE">
+        <span style="color:#6B6B68">Sous-total HT</span>
+        <span style="font-weight:500">${fmt(subtotal, currency)}</span>
+      </div>
+      ${discPct > 0 ? `<div style="display:flex;justify-content:space-between;padding:8px 14px;font-size:9pt;border-bottom:1px solid #F0F0EE">
+        <span style="color:#6B6B68">Remise (${discPct}%)</span>
+        <span style="font-weight:500;color:#DC2626">− ${fmt(discAmt, currency)}</span>
+      </div>` : ''}
+      <div style="display:flex;justify-content:space-between;padding:8px 14px;font-size:9pt;border-bottom:1px solid #F0F0EE">
+        <span style="color:#6B6B68">TVA (${tvaRate}%)</span>
+        <span style="font-weight:500">${fmt(tvaAmt, currency)}</span>
+      </div>
+      ${deposit > 0 ? `<div style="display:flex;justify-content:space-between;padding:8px 14px;font-size:9pt;border-bottom:1px solid #F0F0EE">
+        <span style="color:#6B6B68">Acompte versé</span>
+        <span style="font-weight:500;color:#16A34A">− ${fmt(deposit, currency)}</span>
+      </div>` : ''}
+      <div style="display:flex;justify-content:space-between;padding:12px 14px;font-size:12pt;font-weight:700;background:${accentColor};color:white">
+        <span>TOTAL TTC</span>
+        <span>${fmt(totalTtc, currency)}</span>
+      </div>
+      ${deposit > 0 ? `<div style="display:flex;justify-content:space-between;padding:10px 14px;font-size:10pt;font-weight:700;color:${accentColor};background:${accentColor}15">
+        <span>Reste à payer</span>
+        <span>${fmt(remaining, currency)}</span>
+      </div>` : ''}
+    </div>
+  </div>
+
+  <!-- PAIEMENT + NOTES -->
+  ${bankHtml}
+  ${notesHtml}
+  ${legalHtml}
+
+  <!-- TAMPON STATUT -->
+  ${stamp ? `<div style="position:absolute;bottom:60mm;right:14mm;border:3px solid ${stamp.color};padding:6px 18px;border-radius:4px;color:${stamp.color};font-size:18pt;font-weight:800;text-transform:uppercase;letter-spacing:.08em;transform:rotate(-12deg);opacity:.35">${stamp.text}</div>` : ''}
+
+  <!-- PIED DE PAGE -->
+  <div class="pdf-footer" style="position:absolute;bottom:8mm;left:14mm;right:14mm;border-top:1px solid #E5E5E3;padding-top:8px;display:flex;justify-content:space-between;align-items:center">
+    <div style="font-size:7.5pt;color:#9B9B98">${fromName}${fromRCCM?' · RCCM : '+fromRCCM:''}${fromTax?' · N° Contrib : '+fromTax:''}</div>
+    <div style="font-size:7.5pt;color:#9B9B98">${inv.invoice_number} · Émis le ${issueFmt}</div>
+    <div style="font-size:7.5pt;color:#9B9B98">Page 1 / 1</div>
+  </div>
+  `;
+}
+
+// Ouvrir le PDF depuis le formulaire (preview en temps réel)
+async function printInvoice() {
+  const ci = g('fc-client')?.value?.trim();
+  if (!ci) { showToast('⚠ Sélectionnez un client pour générer le PDF'); return; }
+  const lines = getLines().filter(l => l.desc);
+  if (!lines.length) { showToast('⚠ Ajoutez au moins une ligne'); return; }
+
+  // Construire un objet inv à partir du formulaire
+  const inv = {
+    client_name: ci,
+    invoice_number: g('fc-num')?.value || '#000',
+    type: g('fc-type')?.value || 'Facture',
+    reference: g('fc-ref')?.value || '',
+    subject: g('fc-subject')?.value || '',
+    issue_date: g('fc-issue')?.value || '',
+    due_date: g('fc-due')?.value || '',
+    delivery_date: g('fc-delivery')?.value || '',
+    billing_address: g('fc-bill-addr')?.value || '',
+    contact: g('fc-contact')?.value || '',
+    terms: g('fc-terms')?.value || '',
+    payment: g('fc-payment')?.value || '',
+    discount_percent: parseFloat(g('fc-discount')?.value) || 0,
+    tva_rate: parseFloat(g('fc-tva-rate')?.value) || 18,
+    deposit_amount: parseFloat(g('fc-deposit')?.value) || 0,
+    currency: g('fc-currency')?.value || 'FCFA',
+    bank_name: g('fc-bank')?.value || '',
+    iban: g('fc-iban')?.value || '',
+    momo: g('fc-momo')?.value || '',
+    bic: g('fc-bic')?.value || '',
+    notes: g('fc-notes')?.value || '',
+    legal_mentions: g('fc-legal')?.value || '',
+    status: 'draft',
+  };
+  // Recalcul des totaux
+  const { sub, discAmt, tva, total, remain } = calcInv(
+    lines, inv.discount_percent, inv.tva_rate, inv.deposit_amount
+  );
+  inv.subtotal = sub; inv.discount_amount = discAmt;
+  inv.tva_amount = tva; inv.total_ttc = total; inv.remaining_amount = remain;
+
+  const formattedLines = lines.map(l => ({
+    description: l.desc, quantity: l.qty, unit_price: l.price,
+    line_total: Math.round((l.qty||0)*(l.price||0))
+  }));
+
+  openPdfOverlay(inv, formattedLines, companySettings);
+}
+
+// Ouvrir le PDF depuis le détail d'une facture
+async function printDetail() {
+  if (!detailId) return;
+  showToast('⏳ Génération du PDF…');
+  try {
+    const { data: inv } = await db.from('invoices').select('*').eq('id', detailId).single();
+    const { data: lines } = await db.from('invoice_lines')
+      .select('*').eq('invoice_id', detailId).order('sort_order');
+    openPdfOverlay(inv, lines || [], companySettings);
+  } catch(e) { showToast('❌ Erreur génération PDF'); }
+}
+
+function openPdfOverlay(inv, lines, settings) {
+  const doc = g('pdfDoc');
+  const overlay = g('pdfOverlay');
+  const toolbar = g('pdf-toolbar-title');
+
+  doc.innerHTML = buildPdfDoc(inv, lines, settings);
+  if (toolbar) toolbar.textContent = `${inv.type||'Facture'} ${inv.invoice_number} — Aperçu PDF`;
+
+  overlay.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  overlay.scrollTop = 0;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1870,6 +2351,32 @@ async function saveSettings() {
   } catch(e) { showToast('❌ Erreur sauvegarde : ' + e.message); }
 }
 
+// ─── AUTH — Changement mot de passe & onglets paramètres ─────────────────────
+async function doChangePassword() {
+  const newPwd = g('sec-pwd-new')?.value || '';
+  const confirm = g('sec-pwd-confirm')?.value || '';
+  if (!newPwd || newPwd.length < 8) { showToast('⚠ Mot de passe minimum 8 caractères'); return; }
+  if (newPwd !== confirm) { showToast('⚠ Les mots de passe ne correspondent pas'); return; }
+  const { error } = await db.auth.updateUser({ password: newPwd });
+  if (error) { showToast('❌ ' + error.message); return; }
+  showToast('✓ Mot de passe mis à jour avec succès');
+  if (g('sec-pwd-new')) g('sec-pwd-new').value = '';
+  if (g('sec-pwd-confirm')) g('sec-pwd-confirm').value = '';
+  if (g('pwd-strength-bar')) g('pwd-strength-bar').style.width = '0';
+  if (g('pwd-strength-label')) g('pwd-strength-label').textContent = '';
+}
+
+function openSettingsTab(tab, btn) {
+  document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.settings-nav-item').forEach(b => b.classList.remove('active'));
+  g('st-' + tab).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (tab === 'security' && currentUser) {
+    const el = g('sec-user-email');
+    if (el) { el.innerHTML = '🔐 ' + (currentUser.email || ''); }
+  }
+}
+
 function liveUpdateSidebar() {
   const name = g('st-company')?.value || companySettings.name || 'FacturePro';
   const admin = g('st-admin')?.value || companySettings.admin_name || 'Admin';
@@ -1979,11 +2486,161 @@ window.addEventListener('resize', handleResize);
 })();
 
 // ═══════════════════════════════════════════════════════
-//  BOOT
+//  AUTH — Connexion / Inscription / Déconnexion
 // ═══════════════════════════════════════════════════════
-async function boot() {
+let currentUser = null;
+
+function switchAuthTab(tab) {
+  const isLogin = tab === 'login';
+  g('form-login').style.display = isLogin ? 'block' : 'none';
+  g('form-register').style.display = isLogin ? 'none' : 'block';
+  g('tab-login').classList.toggle('active', isLogin);
+  g('tab-register').classList.toggle('active', !isLogin);
+  g('auth-title').textContent = isLogin ? 'Bienvenue' : 'Créer un compte';
+  g('auth-sub').textContent = isLogin
+    ? 'Connectez-vous à votre espace de facturation'
+    : 'Créez votre compte FacturePro gratuitement';
+  g('auth-error').style.display = 'none';
+}
+
+function togglePwd(inputId, btn) {
+  const inp = g(inputId);
+  const isText = inp.type === 'text';
+  inp.type = isText ? 'password' : 'text';
+  btn.textContent = isText ? '👁' : '🙈';
+}
+
+function checkPwdStrength(pwd) {
+  const bar = g('pwd-strength-bar');
+  const lbl = g('pwd-strength-label');
+  if (!pwd) { bar.style.width = '0'; lbl.textContent = ''; return; }
+  let score = 0;
+  if (pwd.length >= 8) score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  const levels = [
+    { pct:'25%', color:'var(--red)', label:'Faible' },
+    { pct:'50%', color:'var(--amber)', label:'Moyen' },
+    { pct:'75%', color:'var(--blue)', label:'Bien' },
+    { pct:'100%', color:'var(--green)', label:'Excellent' },
+  ];
+  const l = levels[score - 1] || levels[0];
+  bar.style.width = l.pct; bar.style.background = l.color;
+  lbl.textContent = l.label; lbl.style.color = l.color;
+}
+
+function showAuthError(msg, target='auth-error') {
+  const el = g(target);
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 5000);
+}
+
+function setBtnLoading(btnId, loading, text='') {
+  const btn = g(btnId);
+  btn.disabled = loading;
+  btn.textContent = loading ? '⏳ Chargement…' : text;
+}
+
+async function doLogin() {
+  const email = g('login-email').value.trim();
+  const pwd = g('login-pwd').value;
+  if (!email || !pwd) { showAuthError('Email et mot de passe requis.'); return; }
+  setBtnLoading('btn-login', true); g('auth-error').style.display = 'none';
+  const { data, error } = await db.auth.signInWithPassword({ email, password: pwd });
+  setBtnLoading('btn-login', false, 'Se connecter');
+  if (error) {
+    const msgs = {
+      'Invalid login credentials': 'Email ou mot de passe incorrect.',
+      'Email not confirmed': 'Confirmez votre email avant de vous connecter.',
+      'Too many requests': 'Trop de tentatives. Attendez quelques minutes.',
+    };
+    showAuthError(msgs[error.message] || error.message);
+    return;
+  }
+  // onAuthStateChange gérera la suite
+}
+
+async function doRegister() {
+  const firstname = g('reg-firstname').value.trim();
+  const lastname = g('reg-lastname').value.trim();
+  const email = g('reg-email').value.trim();
+  const pwd = g('reg-pwd').value;
+  const company = g('reg-company').value.trim();
+  if (!firstname || !lastname) { showAuthError('Prénom et nom requis.'); return; }
+  if (!email) { showAuthError('Email requis.'); return; }
+  if (pwd.length < 8) { showAuthError('Mot de passe minimum 8 caractères.'); return; }
+  setBtnLoading('btn-register', true); g('auth-error').style.display = 'none';
+  const fullName = firstname + ' ' + lastname;
+  const { data, error } = await db.auth.signUp({
+    email, password: pwd,
+    options: { data: { full_name: fullName, company_name: company || 'Mon Entreprise' } }
+  });
+  setBtnLoading('btn-register', false, 'Créer mon compte →');
+  if (error) { showAuthError(error.message); return; }
+  // Si confirmation email requise
+  if (data.user && !data.session) {
+    g('confirm-email-text').textContent = `Un lien de confirmation a été envoyé à ${email}. Vérifiez aussi vos spams.`;
+    g('authScreen').style.display = 'none';
+    g('confirmScreen').style.display = 'flex';
+    return;
+  }
+  // Si confirmation désactivée → session directe
+}
+
+async function doLogout() {
+  openModal('Se déconnecter', '<p style="font-size:13.5px;color:var(--text-2)">Voulez-vous vraiment vous déconnecter de FacturePro ?</p>',
+    `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+     <button class="btn btn-danger" onclick="confirmLogout()">Se déconnecter</button>`);
+}
+async function confirmLogout() {
+  closeModal();
+  await db.auth.signOut();
+  // onAuthStateChange gérera l'affichage
+}
+
+async function doResetPwd() {
+  g('authScreen').style.display = 'none';
+  g('resetScreen').style.display = 'flex';
+}
+
+async function doSendReset() {
+  const email = g('reset-email').value.trim();
+  if (!email) { showAuthError('Email requis.', 'reset-error'); return; }
+  const { error } = await db.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  });
+  if (error) { showAuthError(error.message, 'reset-error'); return; }
+  g('resetScreen').style.display = 'none';
+  showToast('✉ Lien de réinitialisation envoyé à ' + email, 4000);
+  g('authScreen').style.display = 'flex';
+}
+
+function updateTopbarUser(user) {
+  if (!user) {
+    g('topbar-user').style.display = 'none';
+    g('btn-logout').style.display = 'none';
+    return;
+  }
+  const email = user.email || '';
+  const name = user.user_metadata?.full_name || email.split('@')[0];
+  const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || '?';
+  g('topbar-user').style.display = 'flex';
+  g('topbar-avatar').textContent = initials;
+  g('topbar-email').textContent = name;
+  g('btn-logout').style.display = 'block';
+  // Mettre à jour sidebar
+  const sbUser = g('sb-username'); if (sbUser) sbUser.textContent = name;
+  const sbAvatar = g('sb-avatar'); if (sbAvatar) sbAvatar.textContent = initials;
+}
+
+// ═══════════════════════════════════════════════════════
+//  BOOT avec gestion de session
+// ═══════════════════════════════════════════════════════
+async function bootApp(user) {
+  currentUser = user;
+  updateTopbarUser(user);
   try {
-    // Load clients + settings in parallel
     const [clientsRes] = await Promise.all([
       db.from('clients').select('*').order('name'),
     ]);
@@ -1995,8 +2652,48 @@ async function boot() {
     nav('dashboard');
   } catch(e) {
     console.error('Boot error:', e);
-    g('loadingScreen').innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">⚠️</div><div style="font-size:16px;font-weight:500;margin-bottom:8px">Connexion Supabase échouée</div><div style="font-size:13px;color:#6B6B68">Vérifiez votre connexion Internet</div><button onclick="location.reload()" style="margin-top:20px;padding:10px 20px;background:#E85D2F;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">Réessayer</button></div>';
+    g('loadingScreen').innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:48px;margin-bottom:16px">⚠️</div><div style="font-size:16px;font-weight:500;margin-bottom:8px">Erreur de chargement</div><div style="font-size:13px;color:#6B6B68">Vérifiez votre connexion</div><button onclick="location.reload()" style="margin-top:20px;padding:10px 20px;background:#E85D2F;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">Réessayer</button></div>';
   }
+}
+
+async function boot() {
+  // Vérifier si une session existe déjà
+  const { data: { session } } = await db.auth.getSession();
+
+  if (session?.user) {
+    // Utilisateur déjà connecté → charger l'app
+    await bootApp(session.user);
+  } else {
+    // Pas de session → afficher écran de connexion
+    g('loadingScreen').style.display = 'none';
+    g('authScreen').style.display = 'flex';
+  }
+
+  // Écouter les changements d'état auth en temps réel
+  db.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session?.user) {
+      currentUser = session.user;
+      g('authScreen').style.display = 'none';
+      g('confirmScreen').style.display = 'none';
+      g('loadingScreen').style.display = 'flex';
+      g('app').style.display = 'none';
+      await bootApp(session.user);
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      localClients = [];
+      localInvs = [];
+      companySettings = {};
+      g('app').style.display = 'none';
+      g('loadingScreen').style.display = 'none';
+      updateTopbarUser(null);
+      g('authScreen').style.display = 'flex';
+      switchAuthTab('login');
+      showToast('👋 Vous avez été déconnecté');
+    } else if (event === 'PASSWORD_RECOVERY') {
+      // Utilisateur arrive depuis lien reset → afficher form changement pwd
+      showToast('🔑 Entrez votre nouveau mot de passe dans les Paramètres > Sécurité');
+    }
+  });
 }
 
 boot();
