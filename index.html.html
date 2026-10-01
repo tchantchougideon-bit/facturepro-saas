@@ -1805,8 +1805,19 @@ async function openDetail(id) {
   nav('invoice-detail');
 
   try {
-    const { data: inv } = await db.from('invoices').select('*').eq('id', id).single();
-    const { data: lines } = await db.from('invoice_lines').select('*').eq('invoice_id', id).order('sort_order');
+    // BUG 2 FIX — Une seule requête via la vue invoices_with_lines (facture + lignes)
+    const { data: invWithLines, error } = await db
+      .from('invoices_with_lines')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !invWithLines) { showToast('❌ Facture introuvable'); nav('invoices'); return; }
+
+    const inv = invWithLines;
+    // Les lignes sont dans inv.lines (JSON agrégé par la vue)
+    const lines = Array.isArray(inv.lines) ? inv.lines : (typeof inv.lines === 'string' ? JSON.parse(inv.lines) : []);
+
     if (!inv) { showToast('❌ Facture introuvable'); nav('invoices'); return; }
 
     // Update local cache
@@ -2344,11 +2355,16 @@ async function saveSettings() {
     updated_at: new Date().toISOString()
   };
   try {
-    await db.from('company_settings').update(payload).eq('id', companySettings.id);
-    companySettings = { ...companySettings, ...payload };
+    // UPSERT par user_id — fonctionne même si la ligne n'existe pas encore
+    const { data, error } = await db.from('company_settings')
+      .upsert({ ...payload, user_id: currentUser?.id }, { onConflict: 'user_id' })
+      .select()
+      .single();
+    if (error) throw error;
+    companySettings = { ...companySettings, ...payload, ...(data||{}) };
     liveUpdateSidebar();
-    showToast('✓ Paramètres enregistrés dans Supabase');
-  } catch(e) { showToast('❌ Erreur sauvegarde : ' + e.message); }
+    showToast('✓ Paramètres enregistrés');
+  } catch(e) { showToast('❌ Erreur sauvegarde : ' + (e.message||e)); }
 }
 
 // ─── AUTH — Changement mot de passe & onglets paramètres ─────────────────────
@@ -2389,16 +2405,50 @@ function liveUpdateSidebar() {
 async function handleLogoUpload(event) {
   const file = event.target.files[0]; if (!file) return;
   if (file.size > 2*1024*1024) { showToast('⚠ Logo trop lourd (max 2 Mo)'); return; }
+
+  // Affichage preview immédiat pendant l'upload
   const reader = new FileReader();
-  reader.onload = async e => {
-    const src = e.target.result;
-    g('logo-preview-box').innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover">`;
-    // Store as data URL in settings (for prod, use Supabase Storage)
-    await db.from('company_settings').update({ logo_url: src }).eq('id', companySettings.id);
-    companySettings.logo_url = src;
-    showToast('✓ Logo enregistré');
+  reader.onload = e => {
+    g('logo-preview-box').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
   };
   reader.readAsDataURL(file);
+
+  showToast('⏳ Upload du logo en cours…');
+  try {
+    // BUG 3 FIX — Upload réel vers Supabase Storage bucket "logos"
+    const uid = currentUser?.id;
+    if (!uid) { showToast('⚠ Vous devez être connecté'); return; }
+
+    const ext = file.name.split('.').pop().toLowerCase();
+    const filePath = `${uid}/logo.${ext}`;
+
+    // Upload avec remplacement (upsert)
+    const { error: uploadError } = await db.storage
+      .from('logos')
+      .upload(filePath, file, { upsert: true, contentType: file.type });
+
+    if (uploadError) throw uploadError;
+
+    // Récupérer l'URL publique
+    const { data: urlData } = db.storage.from('logos').getPublicUrl(filePath);
+    const publicUrl = urlData?.publicUrl + '?t=' + Date.now(); // cache-bust
+
+    // Sauvegarder l'URL dans company_settings
+    const { error: updateError } = await db.from('company_settings')
+      .update({ logo_url: publicUrl })
+      .eq('user_id', uid);
+
+    if (updateError) throw updateError;
+
+    companySettings.logo_url = publicUrl;
+    // Mettre à jour le preview avec l'URL publique
+    g('logo-preview-box').innerHTML = `<img src="${publicUrl}" style="width:100%;height:100%;object-fit:cover">`;
+    showToast('✓ Logo uploadé et enregistré dans Supabase Storage');
+  } catch(e) {
+    console.error('Logo upload error:', e);
+    showToast('❌ Erreur upload : ' + (e.message || e));
+  }
+
 }
 
 function pickColor(color, el) {
