@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>FacturePRO — Application</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* Redirect bridge — ouvre l'app principale */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#FAF9FF;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.bridge{text-align:center;max-width:400px}
+.logo-mark{width:56px;height:56px;background:#2E2558;border-radius:48% 52% 68% 32%/42% 38% 62% 58%;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:1.2rem;margin:0 auto 1rem;animation:spin 2s ease infinite}
+@keyframes spin{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+h1{font-size:1.5rem;font-weight:900;color:#2E2558;margin-bottom:.5rem}
+p{font-size:.9rem;color:#6B7280;margin-bottom:2rem}
+.loader{width:40px;height:40px;border:3px solid #EDE9FE;border-top-color:#7C3AED;border-radius:50%;animation:rotate .7s linear infinite;margin:0 auto}
+@keyframes rotate{to{transform:rotate(360deg)}}
+.back-link{margin-top:2rem;font-size:.85rem;color:#7C3AED;font-weight:600;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="bridge">
+  <div class="logo-mark">FP</div>
+  <h1>FacturePRO</h1>
+  <p id="msg">Chargement de votre espace...</p>
+  <div class="loader"></div>
+  <div class="back-link" onclick="window.location.href='index.html'">← Retour à l'accueil</div>
+</div>
+<script>
+// Lire l'intent depuis sessionStorage (set par landing page)
+const intent = sessionStorage.getItem('authIntent') || 'register';
+const hash = window.location.hash; // #login ou #register
+
+// Déterminer l'onglet à ouvrir
+const tab = hash === '#login' ? 'login' : (hash === '#register' ? 'register' : intent);
+
+document.getElementById('msg').textContent =
+  tab === 'login' ? 'Ouverture de la connexion...' : 'Création de votre compte...';
+
+// Rediriger vers la vraie app avec le bon onglet auth
+setTimeout(() => {
+  // L'app principale est facturation-app.html
+  // On passe le tab en query param pour que l'app l'intercepte
+  window.location.href = '../facturation-app.html?auth=' + tab;
+}, 1200);
+</script>
+</body>
+</html>

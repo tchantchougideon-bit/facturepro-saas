@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FacturePRO — Logiciel de facturation professionnel en FCFA et TVA 18% pour les entrepreneurs africains. Conforme OHADA & DGI.">
+<title>FacturePRO — Facturation Professionnelle en FCFA | Afrique de l'Ouest & Centrale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMPOSANT : NAVIGATION
+     ════════════════════════════════════════════════════════════ -->
+<header class="nav" id="mainNav" role="banner">
+  <div class="container">
+    <div class="nav-inner">
+
+      <!-- Logo -->
+      <a href="index.html" class="nav-logo" aria-label="FacturePRO — Accueil">
+        <div class="nav-logo-mark" aria-hidden="true">FP</div>
+        <div>
+          <div class="nav-logo-name">Facture<span>PRO</span></div>
+          <div class="nav-logo-sub">Afrique de l'Ouest &amp; Centrale</div>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav aria-label="Navigation principale">
+        <ul class="nav-links">
+          <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+          <li><a href="#comment-ca-marche">Comment ça marche</a></li>
+          <li><a href="#tarifs">Tarifs</a></li>
+          <li><a href="#temoignages">Témoignages</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+
+      <!-- Desktop Actions -->
+      <div class="nav-actions">
+        <a href="app.html#login" class="nav-login btn-ghost">Se connecter</a>
+        <a href="app.html#register" class="nav-cta">Démarrer gratuitement</a>
+      </div>
+
+      <!-- Hamburger Mobile -->
+      <button class="nav-hamburger" id="hamburger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <nav class="nav-mobile" id="mobileMenu" aria-label="Menu mobile" role="navigation">
+    <a href="#fonctionnalites" class="mobile-link">Fonctionnalités</a>
+    <a href="#comment-ca-marche" class="mobile-link">Comment ça marche</a>
+    <a href="#tarifs" class="mobile-link">Tarifs</a>
+    <a href="#temoignages" class="mobile-link">Témoignages</a>
+    <a href="#faq" class="mobile-link">FAQ</a>
+    <a href="app.html#login" class="mobile-link" style="color:var(--c-brand-600)">Se connecter</a>
+    <a href="app.html#register" class="btn btn-primary">
+      <span class="btn-inner">
+        Démarrer gratuitement
+        <svg class="btn-arrow" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </span>
+    </a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMPOSANT : HERO SECTION
+     ════════════════════════════════════════════════════════════ -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-dots" aria-hidden="true"></div>
+  <div class="hero-blob" aria-hidden="true"></div>
+  <div class="container">
+
+    <!-- Contenu textuel -->
+    <div class="hero-content">
+
+      <div class="hero-badge h-anim h-a1" role="status">
+        <span aria-hidden="true">🚀</span>
+        <span>La facturation pensée pour l'Afrique de l'Ouest &amp; Centrale</span>
+      </div>
+
+      <h1 class="hero-title h-anim h-a2" id="hero-title">
+        Fini la galère des factures sur
+        <span class="wavy">Excel et Word</span>.
+      </h1>
+
+      <p class="hero-sub h-anim h-a3">
+        FacturePRO permet aux entrepreneurs africains de créer des factures conformes en
+        <strong>FCFA</strong>, de calculer la <strong>TVA 18%</strong> en 1 clic
+        et d'encaisser 2× plus vite — sans tracas comptable.
+      </p>
+
+      <div class="hero-actions h-anim h-a4">
+        <!-- CTA PRINCIPAL — Animation gradient + ripple + arrow -->
+        <a href="app.html#register" class="btn btn-primary" id="heroCta" role="button">
+          <span class="btn-inner">
+            <span>Commencer gratuitement</span>
+            <svg class="btn-arrow" width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </span>
+        </a>
+        <!-- CTA Secondaire -->
+        <a href="#demo" class="btn btn-secondary" role="button">
+          <span class="btn-inner">
+            <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor" style="color:var(--c-brand-600)" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+            </svg>
+            <span>Voir la démo</span>
+          </span>
+        </a>
+      </div>
+
+      <!-- Trust badges -->
+      <div class="hero-trust h-anim h-a4" role="list" aria-label="Indicateurs de confiance">
+        <span role="listitem">
+          <span class="hero-stars" aria-label="Note 4.9 sur 5">★★★★★</span>
+          4.9/5 par +2 500 entrepreneurs
+        </span>
+        <span role="listitem" aria-hidden="true" style="color:var(--c-gray-300)">•</span>
+        <span role="listitem">✅ 100% conforme OHADA &amp; DGI</span>
+        <span role="listitem" aria-hidden="true" style="color:var(--c-gray-300)">•</span>
+        <span role="listitem" style="color:var(--c-brand-800);font-weight:700">Sans carte bancaire</span>
+      </div>
+
+    </div>
+
+    <!-- MOCKUP Facture -->
+    <div class="hero-mockup h-mockup" id="demo" aria-label="Aperçu de l'interface FacturePRO">
+
+      <!-- Badge flottant -->
+      <div class="hero-float-label" aria-hidden="true">FACTURE</div>
+
+      <!-- Notification paiement flottante -->
+      <div class="hero-notif" role="status" aria-live="polite">
+        <div class="hero-notif-icon" aria-hidden="true">✓</div>
+        <div>
+          <div class="hero-notif-label">Paiement reçu Wave / OM</div>
+          <div class="hero-notif-amount">+ 1 475 000 FCFA</div>
+          <div class="hero-notif-time">• à l'instant</div>
+        </div>
+      </div>
+
+      <!-- Document Facture -->
+      <article class="inv-doc" aria-label="Exemple de facture générée par FacturePRO">
+        <div class="inv-doc-header">
+          <div>
+            <div class="inv-ref">Proforma &amp; Facture N°</div>
+            <div style="font-size:.85rem;font-weight:700;color:var(--c-gray-700);margin-bottom:.25rem">FAC-2025-0842</div>
+            <div class="inv-company">Parkvega's Mobile Projects SARL</div>
+            <div class="inv-client">Client: Dakar Innovations SAS • Dakar, Sénégal</div>
+          </div>
+          <div class="inv-status">
+            <div class="inv-status-dot"></div>
+            Payée par Virement
+          </div>
+        </div>
+
+        <table class="inv-table" aria-label="Lignes de prestations">
+          <thead>
+            <tr>
+              <th scope="col">Prestation / Désignation</th>
+              <th scope="col">Quantité</th>
+              <th scope="col">Prix (FCFA)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Design UI/UX - Application Mobile</td>
+              <td>1</td>
+              <td>450 000</td>
+            </tr>
+            <tr>
+              <td>Développement Frontend Flutter</td>
+              <td>1</td>
+              <td>500 000</td>
+            </tr>
+            <tr>
+              <td>Intégration Passerelle Mobile Money</td>
+              <td>1</td>
+              <td>200 000</td>
+            </tr>
+            <tr>
+              <td>Déploiement Cloud &amp; Monitoring 3 mois</td>
+              <td>1</td>
+              <td>100 000</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="inv-totals">
+          <div class="inv-terms">
+            <strong>Conditions de règlement :</strong>
+            30 jours net • Pénalités de retard : 3× le taux légal.
+          </div>
+          <div class="inv-nums">
+            <div class="t-row"><span>Sous-total HT :</span><span>1 250 000 FCFA</span></div>
+            <div class="t-row tva"><span>TVA Légale (18%) :</span><span>+ 225 000 FCFA</span></div>
+            <div class="t-row ttc"><span>Net à Payer :</span><span class="t-amount">1 475 000 FCFA</span></div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMPOSANT : PROBLÈMES (Why FacturePRO)
+     ════════════════════════════════════════════════════════════ -->
+<section class="section-pad bg-white border-y" aria-labelledby="problem-title">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Le Constat</div>
+      <h2 class="section-title" id="problem-title">Pourquoi abandonner vos vieux modèles ?</h2>
+      <p class="section-sub">Créer des factures manuellement fait perdre en moyenne <strong style="color:var(--c-brand-850)">7 heures par semaine</strong> à chaque dirigeant d'entreprise.</p>
+    </div>
+
+    <div class="grid-3">
+      <!-- Problème 1 -->
+      <div class="card card-light reveal reveal-d1">
+        <div class="card-icon" style="background:#FEE2E2;color:#DC2626" aria-hidden="true">✕</div>
+        <h3 class="card-title">Manque de crédibilité</h3>
+        <p class="card-text">Un devis fait sur Word ou un tableau mal aligné donne une image amatrice. Les multinationales et grands comptes exigent des documents irréprochables avec mentions légales.</p>
+      </div>
+      <!-- Problème 2 -->
+      <div class="card card-light reveal reveal-d2">
+        <div class="card-icon" style="background:#FEF3C7;color:#D97706" aria-hidden="true">%</div>
+        <h3 class="card-title">Erreurs de calcul de TVA</h3>
+        <p class="card-text">Calculer à la main les 18% de TVA, la taxe spécifique ou les retenues à la source mène inévitablement à des erreurs et des redressements fiscaux coûteux.</p>
+      </div>
+      <!-- Problème 3 -->
+      <div class="card card-light reveal reveal-d3">
+        <div class="card-icon" aria-hidden="true">⏱</div>
+        <h3 class="card-title">Impayés et relances oubliées</h3>
+        <p class="card-text">Sans tableau de bord centralisé, les factures restent impayées pendant des mois. Vous perdez la trace de qui vous doit quoi et quand relancer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMPOSANT : FONCTIONNALITÉS
+     ════════════════════════════════════════════════════════════ -->
+<section class="section-pad bg-light" id="fonctionnalites" aria-labelledby="features-title">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Fonctionnalités Clés</div>
+      <h2 class="section-title" id="features-title">Pensé pour le business réel en Afrique</h2>
+      <p class="section-sub">Un outil complet, rapide et épuré, conçu sans jargon complexe pour vous faire gagner du temps dès le premier jour.</p>
+    </div>
+
+    <div class="grid-2">
+      <!-- Feature 1 -->
+      <div class="card reveal reveal-d1">
+        <div class="card-icon" aria-hidden="true">📄</div>
+        <h3 class="card-title">Factures professionnelles en 2 clics</h3>
+        <p class="card-text">Générez des factures PDF ultra-professionnelles aux normes en quelques secondes. Personnalisez votre logo, vos coordonnées bancaires et vos mentions spécifiques instantanément.</p>
+        <div class="card-tags">
+          <span>✓ Export PDF instantané</span>
+          <span class="card-tag-accent">✓ Envoi WhatsApp &amp; Email</span>
+        </div>
+      </div>
+      <!-- Feature 2 -->
+      <div class="card reveal reveal-d2">
+        <div class="card-icon" aria-hidden="true">🧮</div>
+        <h3 class="card-title">TVA 18% &amp; Arrondis FCFA automatiques</h3>
+        <p class="card-text">Plus besoin de calculatrice. FacturePRO applique automatiquement le taux officiel de 18% (UEMOA/CEMAC), gère l'exonération ou les acomptes sans aucun risque d'erreur.</p>
+        <div class="card-tags">
+          <span>✓ Conforme OHADA</span>
+          <span class="card-tag-accent">✓ Zéro centime d'écart</span>
+        </div>
+      </div>
+      <!-- Feature 3 -->
+      <div class="card reveal reveal-d3">
+        <div class="card-icon" aria-hidden="true">🔔</div>
+        <h3 class="card-title">Suivi des paiements &amp; Relances</h3>
+        <p class="card-text">Identifiez immédiatement les factures en attente, échues ou réglées. Programmez des rappels automatiques pour inciter vos clients à régler sans froisser la relation.</p>
+        <div class="card-tags">
+          <span>✓ Statut en direct</span>
+          <span class="card-tag-accent">✓ −40% de retards</span>
+        </div>
+      </div>
+      <!-- Feature 4 -->
+      <div class="card reveal reveal-d4">
+        <div class="card-icon" aria-hidden="true">👥</div>
+        <h3 class="card-title">Répertoire clients &amp; Historique</h3>
+        <p class="card-text">Conservez les coordonnées de vos clients, NINEA, RCCM et adresses. Transformez un devis accepté en facture définitive en un seul clic sans ressaisie.</p>
+        <div class="card-tags">
+          <span>✓ Devis → Facture en 1 clic</span>
+          <span class="card-tag-accent">✓ Export Excel/CSV</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMPOSANT : COMMENT ÇA MARCHE
+     ════════════════════════════════════════════════════════════ -->
+<section class="section-pad bg-white" id="comment-ca-marche" aria-labelledby="how-title">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Simplicité Absolue</div>
+      <h2 class="section-title" id="how-title">Prêt en 3 minutes chrono</h2>
+      <p class="section-sub">Aucune formation technique requise. Si vous savez envoyer un e-mail, vous savez utiliser FacturePRO.</p>
+    </div>
+
+    <div class="grid-3">
+      <!-- Étape 1 -->
+      <div class="card card-light text-center reveal reveal-d1" style="display:flex;flex-direction:column;align-items:center">
+        <div class="step-num" style="background:var(--c-brand-850)" aria-label="Étape 1">01</div>
+        <h3 class="card-title">Créez votre compte</h3>
+        <p class="card-text">Inscrivez-vous en 30 secondes. Ajoutez le nom de votre structure, votre logo et votre devise préférée (FCFA XOF ou XAF).</p>
+      </div>
+      <!-- Étape 2 -->
+      <div class="card card-light text-center reveal reveal-d2" style="display:flex;flex-direction:column;align-items:center">
+        <div class="step-num" style="background:var(--c-brand-700)" aria-label="Étape 2">02</div>
+        <h3 class="card-title">Émettez la facture</h3>
+        <p class="card-text">Choisissez votre client, ajoutez vos lignes de prestation. La TVA 18% est calculée sans effort et le document est formaté parfaitement.</p>
+      </div>
+      <!-- Étape 3 -->
+      <div class="card card-light text-center reveal reveal-d3" style="display:flex;flex-direction:column;align-items:center">
+        <div class="step-num" style="background:var(--c-brand-500)" aria-label="Étape 3">03</div>
+        <h3 class="card-title">Partagez et encaissez</h3>
+        <p class="card-text">Téléchargez le PDF certifié ou partagez le lien sécurisé par WhatsApp. Recevez vos fonds et marquez la facture comme réglée.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMPOSANT : TÉMOIGNAGES
+     ════════════════════════════════════════════════════════════ -->
+<section class="section-pad bg-light border-top" id="temoignages" aria-labelledby="testimonials-title">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Retours d'Expérience</div>
+      <h2 class="section-title" id="testimonials-title">Adopté par plus de 2 500 entrepreneurs</h2>
+      <p class="section-sub">Du consultant freelance à la PME en pleine expansion.</p>
+    </div>
+
+    <div class="grid-3" role="list" aria-label="Témoignages clients">
+      <!-- Témoignage 1 -->
+      <article class="t-card reveal reveal-d1" role="listitem">
+        <div class="t-stars" aria-label="Note 5 étoiles">★★★★★</div>
+        <p class="t-body">"Avant, nos clients corporatifs mettaient 60 jours à payer parce que nos factures manquaient de détails conformes. Avec les modèles de FacturePRO, nos règlements tombent sous 15 jours. Indispensable !"</p>
+        <div class="t-author">
+          <div class="t-avatar" style="background:var(--c-brand-850)" aria-hidden="true">MD</div>
+          <div>
+            <div class="t-name">Moussa Diop</div>
+            <div class="t-role">Directeur d'Agence • Dakar, Sénégal</div>
+          </div>
+        </div>
+      </article>
+      <!-- Témoignage 2 -->
+      <article class="t-card reveal reveal-d2" role="listitem">
+        <div class="t-stars" aria-label="Note 5 étoiles">★★★★★</div>
+        <p class="t-body">"Le calcul automatique de la TVA à 18% m'a sauvée de jours entiers de casse-tête comptable lors de mes déclarations mensuelles. En fin de mois, j'exporte tout sur Excel pour mon comptable en 1 clic."</p>
+        <div class="t-author">
+          <div class="t-avatar" style="background:var(--c-brand-600)" aria-hidden="true">AK</div>
+          <div>
+            <div class="t-name">Aminata Koné</div>
+            <div class="t-role">Boutique &amp; E-commerce • Abidjan, CI</div>
+          </div>
+        </div>
+      </article>
+      <!-- Témoignage 3 -->
+      <article class="t-card reveal reveal-d3" role="listitem">
+        <div class="t-stars" aria-label="Note 5 étoiles">★★★★★</div>
+        <p class="t-body">"L'interface est hyper rapide même avec une connexion 3G sur mon smartphone à Douala. Les devis convertibles directement en facture m'ont fait gagner un temps précieux face à la concurrence."</p>
+        <div class="t-author">
+          <div class="t-avatar" style="background:var(--c-brand-500)" aria-hidden="true">PN</div>
+          <div>
+            <div class="t-name">Paul Ndongo</div>
+            <div class="t-role">Consultant Télécoms • Douala, Cameroun</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMPOSANT : TARIFS
+     ════════════════════════════════════════════════════════════ -->
+<section class="section-pad bg-white" id="tarifs" aria-labelledby="pricing-title">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Tarification Transparente</div>
+      <h2 class="section-title" id="pricing-title">Investissez dans votre sérénité</h2>
+      <p class="section-sub">Payable par Wave, Orange Money, MTN MoMo ou Carte Bancaire.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Plan Starter -->
+      <div class="p-card reveal reveal-d1">
+        <div>
+          <div class="p-name" style="color:var(--c-brand-850)">Starter</div>
+          <div class="p-desc">Pour démarrer en toute liberté.</div>
+          <div style="margin-bottom:2rem">
+            <span class="p-price" style="color:var(--c-brand-850)">0</span>
+            <span class="p-period"> FCFA / mois</span>
+          </div>
+          <ul class="p-features">
+            <li><span class="p-check">✓</span> Jusqu'à 5 factures / mois</li>
+            <li><span class="p-check">✓</span> 1 utilisateur</li>
+            <li><span class="p-check">✓</span> Export PDF standard</li>
+            <li><span class="p-check">✓</span> Calcul TVA 18% automatique</li>
+          </ul>
+        </div>
+        <a href="app.html#register" class="p-btn p-btn-outline">Créer mon compte gratuit</a>
+      </div>
+
+      <!-- Plan PRO (featured) -->
+      <div class="p-card featured reveal reveal-d2" style="position:relative">
+        <div class="p-pill">Le Plus Populaire</div>
+        <div>
+          <div class="p-name">Professionnel</div>
+          <div class="p-desc">Pour les indépendants et entreprises actives.</div>
+          <div style="margin-bottom:2rem">
+            <span class="p-price">5 000</span>
+            <span class="p-period"> FCFA / mois</span>
+          </div>
+          <ul class="p-features" style="color:rgba(237,233,254,.9)">
+            <li><span class="p-check">✓</span> <strong style="color:white">Factures &amp; Devis illimités</strong></li>
+            <li><span class="p-check">✓</span> Logo et design personnalisés</li>
+            <li><span class="p-check">✓</span> Relances automatiques d'impayés</li>
+            <li><span class="p-check">✓</span> Envoi direct WhatsApp &amp; Email</li>
+            <li><span class="p-check">✓</span> Support WhatsApp 7j/7</li>
+          </ul>
+        </div>
+        <a href="app.html#register" class="p-btn p-btn-featured">Essayer Pro 14 jours gratuits</a>
+      </div>
+
+      <!-- Plan Entreprise -->
+      <div class="p-card reveal reveal-d3">
+        <div>
+          <div class="p-name" style="color:var(--c-brand-850)">Entreprise</div>
+          <div class="p-desc">Pour les équipes et PME établies.</div>
+          <div style="margin-bottom:2rem">
+            <span class="p-price" style="color:var(--c-brand-850)">15 000</span>
+            <span class="p-period"> FCFA / mois</span>
+          </div>
+          <ul class="p-features">
+            <li><span class="p-check">✓</span> <strong>Jusqu'à 5 utilisateurs</strong></li>
+            <li><span class="p-check">✓</span> Multi-devises (FCFA, EUR, USD)</li>
+            <li><span class="p-check">✓</span> Export comptable SYSCOHADA</li>
+            <li><span class="p-check">✓</span> Gestion des stocks incluse</li>
+          </ul>
+        </div>
+        <a href="app.html#register" class="p-btn p-btn-outline">Choisir Business</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMPOSANT : FAQ
+     ════════════════════════════════════════════════════════════ -->
+<section class="section-pad bg-light border-top" id="faq" aria-labelledby="faq-title">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Foire Aux Questions</div>
+      <h2 class="section-title" id="faq-title">Des questions fréquentes ?</h2>
+    </div>
+
+    <div class="faq-stack" role="list">
+      <details class="faq-item reveal reveal-d1" role="listitem">
+        <summary class="faq-summary">
+          <span>Mes factures sont-elles acceptées par l'administration fiscale ?</span>
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </summary>
+        <div class="faq-body">Absolument. Les documents générés contiennent l'ensemble des mentions légales obligatoires selon les normes du droit OHADA et des directions générales des impôts (RCCM, NINEA/IFU, mentions de TVA et coordonnées bancaires).</div>
+      </details>
+
+      <details class="faq-item reveal reveal-d2" role="listitem">
+        <summary class="faq-summary">
+          <span>Comment mes clients peuvent-ils me payer ?</span>
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </summary>
+        <div class="faq-body">Vous pouvez renseigner vos coordonnées bancaires classiques (IBAN/RIB) ainsi que vos numéros marchands Wave, Orange Money ou MTN Mobile Money. Le client reçoit ces coordonnées clairement en bas de chaque facture.</div>
+      </details>
+
+      <details class="faq-item reveal reveal-d3" role="listitem">
+        <summary class="faq-summary">
+          <span>Puis-je changer ou annuler mon abonnement à tout moment ?</span>
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </summary>
+        <div class="faq-body">Oui, aucun engagement n'est imposé. Vous pouvez passer au plan supérieur ou résilier en un clic depuis votre espace administrateur. Vos données restent archivées en toute sécurité.</div>
+      </details>
+
+      <details class="faq-item reveal reveal-d4" role="listitem">
+        <summary class="faq-summary">
+          <span>Mes données sont-elles sécurisées ?</span>
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </summary>
+        <div class="faq-body">Toutes vos données sont chiffrées et hébergées sur Supabase (infrastructure AWS eu-west-1), avec authentification sécurisée, Row Level Security et sauvegardes automatiques quotidiennes. Chaque utilisateur n'accède qu'à ses propres données.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMPOSANT : CTA FINAL
+     ════════════════════════════════════════════════════════════ -->
+<section class="cta-wrap" aria-labelledby="cta-title">
+  <div class="container">
+    <div class="cta-banner reveal">
+      <div class="cta-blob-1" aria-hidden="true"></div>
+      <div class="cta-blob-2" aria-hidden="true"></div>
+
+      <!-- Icône animée qualité -->
+      <div class="cta-icon" aria-hidden="true" role="img" aria-label="Qualité certifiée">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+      </div>
+
+      <h2 class="cta-title" id="cta-title">
+        Rejoignez les entrepreneurs qui facturent comme des pros.
+      </h2>
+      <p class="cta-sub">
+        Créez votre première facture en FCFA certifiée dans 2 minutes. Sans engagement, ni carte de crédit requise.
+      </p>
+
+      <a href="app.html#register" class="btn-white">
+        <span>Commencer gratuitement maintenant</span>
+        <svg class="btn-arrow" width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </a>
+
+      <p class="cta-note">Aucune carte bancaire requise • Configuration immédiate • Support WhatsApp 7j/7</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ════════════════════════════════════════════════════════════
+     COMPOSANT : FOOTER
+     ════════════════════════════════════════════════════════════ -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+
+      <!-- Marque -->
+      <div>
+        <a href="index.html" class="nav-logo" style="margin-bottom:1rem;display:inline-flex" aria-label="FacturePRO Accueil">
+          <div class="nav-logo-mark" aria-hidden="true">FP</div>
+          <div>
+            <div class="nav-logo-name">Facture<span>PRO</span></div>
+            <div class="nav-logo-sub">Afrique de l'Ouest &amp; Centrale</div>
+          </div>
+        </a>
+        <p class="footer-brand-desc">Le standard moderne de la facturation et du recouvrement d'entreprise en Afrique subsaharienne.</p>
+        <span class="footer-pill">Fait avec fierté en Afrique 🌍</span>
+      </div>
+
+      <!-- Produit -->
+      <div>
+        <div class="footer-col-title">Produit</div>
+        <ul class="footer-links">
+          <li><a href="#fonctionnalites">Factures &amp; Devis</a></li>
+          <li><a href="#fonctionnalites">Gestion TVA 18%</a></li>
+          <li><a href="#tarifs">Suivi des Paiements</a></li>
+          <li><a href="#tarifs">Grille des tarifs</a></li>
+        </ul>
+      </div>
+
+      <!-- Ressources -->
+      <div>
+        <div class="footer-col-title">Ressources</div>
+        <ul class="footer-links">
+          <li><a href="#">Modèles FCFA</a></li>
+          <li><a href="#">Guide fiscalité OHADA</a></li>
+          <li><a href="#">Calculateur TVA</a></li>
+          <li><a href="#">Centre d'aide</a></li>
+        </ul>
+      </div>
+
+      <!-- Légal -->
+      <div>
+        <div class="footer-col-title">Légal</div>
+        <ul class="footer-links">
+          <li><a href="#">CGV</a></li>
+          <li><a href="#">Protection des données</a></li>
+          <li><a href="#">Mentions Légales</a></li>
+          <li><a href="#">Sécurité &amp; Chiffrement</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 FacturePRO. Tous droits réservés.</p>
+      <div class="footer-socials">
+        <a href="#" aria-label="LinkedIn FacturePRO">LinkedIn</a>
+        <a href="#" aria-label="Twitter FacturePRO">Twitter (X)</a>
+        <a href="#" aria-label="Communauté WhatsApp">WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════════════════════════════════
+     JAVASCRIPT : Interactions & Animations
+     ════════════════════════════════════════════════════════════ -->
+<script>
+// ── Navigation : scroll + hamburger ──────────────────────────
+const nav = document.getElementById('mainNav');
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+
+// Scroll shadow
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// Hamburger toggle
+hamburger.addEventListener('click', () => {
+  const isOpen = hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open', isOpen);
+  hamburger.setAttribute('aria-expanded', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+});
+
+// Fermer menu mobile au clic sur lien
+document.querySelectorAll('.mobile-link').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  });
+});
+
+// Fermer menu au resize desktop
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 1024) {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+}, { passive: true });
+
+// ── Smooth nav active link highlight ─────────────────────────
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.style.color = link.getAttribute('href') === '#' + entry.target.id
+          ? 'var(--c-brand-800)' : '';
+      });
+    }
+  });
+}, { threshold: 0.4, rootMargin: '-80px 0px -40% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// ── Scroll reveal (Intersection Observer) ────────────────────
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => revealObserver.observe(el));
+
+// ── FAQ single-open accordion ─────────────────────────────────
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.addEventListener('toggle', () => {
+    if (item.open) {
+      document.querySelectorAll('.faq-item').forEach(other => {
+        if (other !== item) other.removeAttribute('open');
+      });
+    }
+  });
+});
+
+// ── CTA Button ripple feedback ────────────────────────────────
+document.querySelectorAll('.btn-primary').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    // The CSS ::after pseudo handles the visual ripple
+    // Just add tactile class momentarily
+    this.classList.add('clicking');
+    setTimeout(() => this.classList.remove('clicking'), 400);
+  });
+});
+
+// ── Redirect to app on CTA clicks ────────────────────────────
+// All primary CTAs lead to the app's auth screen
+document.querySelectorAll('a[href="app.html#register"]').forEach(link => {
+  link.addEventListener('click', function(e) {
+    // Store intent so app.html can open register tab
+    sessionStorage.setItem('authIntent', 'register');
+  });
+});
+document.querySelectorAll('a[href="app.html#login"]').forEach(link => {
+  link.addEventListener('click', function(e) {
+    sessionStorage.setItem('authIntent', 'login');
+  });
+});
+
+// ── Counter animation for hero trust ─────────────────────────
+function animateCounter(el, target, suffix = '', duration = 1500) {
+  let start = 0;
+  const step = Math.ceil(target / (duration / 16));
+  const timer = setInterval(() => {
+    start = Math.min(start + step, target);
+    el.textContent = start.toLocaleString('fr-FR') + suffix;
+    if (start >= target) clearInterval(timer);
+  }, 16);
+}
+
+// Trigger counters when hero is visible
+const heroObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting) {
+    heroObserver.disconnect();
+    // Small delay for polish
+    setTimeout(() => {
+      const badge = document.querySelector('.hero-badge span:last-child');
+      if (badge) {
+        badge.innerHTML = badge.innerHTML.replace('+2 500', '<span id="ctr">0</span>+');
+        const ctr = document.getElementById('ctr');
+        if (ctr) animateCounter(ctr, 2500, '');
+      }
+    }, 800);
+  }
+}, { threshold: 0.5 });
+const heroSection = document.querySelector('.hero');
+if (heroSection) heroObserver.observe(heroSection);
+</script>
+
+</body>
+</html>
