@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
+    {"src": "/landing/styles.css", "dest": "/landing/styles.css"},
+    {"src": "/landing/app", "dest": "/landing/app.html"},
+    {"src": "/landing", "dest": "/landing/index.html"},
+    {"src": "/", "dest": "/index.html"}
+  ]
+}
